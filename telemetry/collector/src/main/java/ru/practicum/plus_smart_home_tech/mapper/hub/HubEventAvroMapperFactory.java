@@ -18,7 +18,7 @@ public class HubEventAvroMapperFactory {
 
     public HubEventAvroMapper getMapper(HubEventType eventType) {
         if (!mappers.containsKey(eventType)) {
-            throw new IllegalArgumentException("Unknown event type: " + eventType);
+            throw new IllegalArgumentException("Unknown hub event type: " + eventType);
         }
         return mappers.get(eventType);
     }
