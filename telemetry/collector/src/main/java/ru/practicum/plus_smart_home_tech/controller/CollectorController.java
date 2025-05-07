@@ -17,7 +17,7 @@ public class CollectorController {
     @PostMapping("/sensors")
     @ResponseStatus(HttpStatus.OK)
     public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
-        throw new RuntimeException("Not implemented");
+        collectorService.collect(event);
     }
 
     @PostMapping("/hubs")

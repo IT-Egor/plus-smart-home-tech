@@ -3,6 +3,7 @@ package ru.practicum.plus_smart_home_tech.dto.hub;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.practicum.plus_smart_home_tech.dto.hub.device.added.DeviceAddedEvent;
 import ru.practicum.plus_smart_home_tech.dto.hub.device.removed.DeviceRemovedEvent;
@@ -30,6 +31,6 @@ public abstract class HubEvent {
 
     protected Instant timestamp = Instant.now();
 
-    @NotBlank(message = "type is required")
+    @NotNull(message = "type is required")
     public abstract HubEventType getType();
 }
