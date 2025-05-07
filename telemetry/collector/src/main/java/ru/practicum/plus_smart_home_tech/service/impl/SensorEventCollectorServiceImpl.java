@@ -5,14 +5,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 import ru.practicum.plus_smart_home_tech.dto.sensor.*;
 import ru.practicum.plus_smart_home_tech.kafka.KafkaClient;
-import ru.practicum.plus_smart_home_tech.service.CollectorService;
+import ru.practicum.plus_smart_home_tech.service.SensorEventCollectorService;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class CollectorServiceImpl implements CollectorService {
+public class SensorEventCollectorServiceImpl implements SensorEventCollectorService {
     private final KafkaClient kafkaClient;
     private final String topic = "telemetry.sensors.v1";
 
@@ -52,11 +50,11 @@ public class CollectorServiceImpl implements CollectorService {
 
             case TemperatureSensorEvent temperatureSensorEvent ->
                     payload = TemperatureSensorAvro.newBuilder()
-                            .setTemperatureC(Objects.requireNonNull(temperatureSensorEvent).getTemperatureC())
+                            .setTemperatureC(temperatureSensorEvent.getTemperatureC())
                             .setTemperatureF(temperatureSensorEvent.getTemperatureF())
                             .build();
 
-            default -> throw new IllegalArgumentException("Unexpected event: " + event);
+            default -> throw new IllegalArgumentException("Unsupported sensor event type");
         }
 
         return SensorEventAvro.newBuilder()

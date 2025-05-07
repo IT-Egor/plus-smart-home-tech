@@ -6,24 +6,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.plus_smart_home_tech.dto.hub.HubEvent;
 import ru.practicum.plus_smart_home_tech.dto.sensor.SensorEvent;
-import ru.practicum.plus_smart_home_tech.service.CollectorService;
+import ru.practicum.plus_smart_home_tech.service.HubEventCollectorService;
+import ru.practicum.plus_smart_home_tech.service.SensorEventCollectorService;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/events")
 public class CollectorController {
-    private final CollectorService collectorService;
+    private final SensorEventCollectorService sensorEventCollectorService;
+    private final HubEventCollectorService hubEventCollectorService;
 
     @PostMapping("/sensors")
     @ResponseStatus(HttpStatus.OK)
     public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
-        collectorService.collect(event);
+        sensorEventCollectorService.collect(event);
     }
 
     @PostMapping("/hubs")
     @ResponseStatus(HttpStatus.OK)
     public void collectHubEvent(@Valid @RequestBody HubEvent event) {
-        throw new RuntimeException("Not implemented");
+        hubEventCollectorService.collect(event);
     }
 }
 
