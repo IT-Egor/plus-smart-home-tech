@@ -1,61 +1,92 @@
 package ru.practicum.plus_smart_home_tech.handler.hub.impl;
 
+import com.google.protobuf.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
-import ru.practicum.plus_smart_home_tech.dto.hub.HubEvent;
-import ru.practicum.plus_smart_home_tech.dto.hub.scenario.added.ScenarioAddedEvent;
-import ru.practicum.plus_smart_home_tech.dto.hub.scenario.added.condition.ScenarioCondition;
-import ru.practicum.plus_smart_home_tech.dto.hub.scenario.added.device_action.DeviceAction;
 import ru.practicum.plus_smart_home_tech.handler.hub.HubEventHandler;
+import ru.practicum.plus_smart_home_tech.kafka.KafkaClient;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
+import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Component
+@AllArgsConstructor
 public class ScenarioAddedEventHandler implements HubEventHandler {
+    private final KafkaClient kafkaClient;
+
     @Override
     public HubEventProto.PayloadCase getType() {
         return HubEventProto.PayloadCase.SCENARIO_ADDED;
     }
 
     @Override
-    public HubEventAvro toAvro(HubEvent event) {
-        ScenarioAddedEvent scenarioAddedEvent = (ScenarioAddedEvent) event;
+    public void handle(HubEventProto eventProto) {
+        HubEventAvro eventAvro = protoToAvro(eventProto);
+        ProducerRecord<String, SpecificRecordBase> producerRecord = new ProducerRecord<>(
+                kafkaClient.getHubTopic(),
+                null,
+                eventAvro.getTimestamp().toEpochMilli(),
+                eventAvro.getHubId(),
+                eventAvro);
+        kafkaClient.getProducer().send(producerRecord);
+        log.info("Scenario added: {}", eventAvro);
+    }
 
-        List<DeviceActionAvro> deviceActionAvroList = scenarioAddedEvent.getActions().stream()
+    @Override
+    public HubEventAvro protoToAvro(HubEventProto eventProto) {
+        ScenarioAddedEventProto scenarioAddedEventProto = eventProto.getScenarioAdded();
+
+        List<DeviceActionAvro> deviceActionAvroList = scenarioAddedEventProto.getActionList().stream()
                 .map(this::deviceActionToAvro)
                 .toList();
-        List<ScenarioConditionAvro> scenarioConditionAvroList = scenarioAddedEvent.getConditions().stream()
+        List<ScenarioConditionAvro> scenarioConditionAvroList = scenarioAddedEventProto.getConditionList().stream()
                 .map(this::scenarioConditionAvro)
                 .toList();
 
-        Object payload = ScenarioAddedEventAvro.newBuilder()
-                .setName(scenarioAddedEvent.getName())
+        ScenarioAddedEventAvro scenarioAddedEventAvro = ScenarioAddedEventAvro.newBuilder()
+                .setName(scenarioAddedEventProto.getName())
                 .setActions(deviceActionAvroList)
                 .setConditions(scenarioConditionAvroList)
                 .build();
 
+        Timestamp timestamp = eventProto.getTimestamp();
+
         return HubEventAvro.newBuilder()
-                .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp())
-                .setPayload(payload)
+                .setHubId(eventProto.getHubId())
+                .setTimestamp(Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()))
+                .setPayload(scenarioAddedEventAvro)
                 .build();
     }
 
-    private DeviceActionAvro deviceActionToAvro(DeviceAction action) {
+    private DeviceActionAvro deviceActionToAvro(DeviceActionProto actionProto) {
         return DeviceActionAvro.newBuilder()
-                .setType(ActionTypeAvro.valueOf(action.getType().name()))
-                .setSensorId(action.getSensorId())
-                .setValue(action.getValue())
+                .setType(ActionTypeAvro.valueOf(actionProto.getType().name()))
+                .setSensorId(actionProto.getSensorId())
+                .setValue(actionProto.getValue())
                 .build();
     }
 
-    private ScenarioConditionAvro scenarioConditionAvro(ScenarioCondition condition) {
+    private ScenarioConditionAvro scenarioConditionAvro(ScenarioConditionProto conditionProto) {
+        Object value = null;
+        if (conditionProto.getValueCase() == ScenarioConditionProto.ValueCase.INT_VALUE) {
+            value = conditionProto.getIntValue();
+        } else if (conditionProto.getValueCase() == ScenarioConditionProto.ValueCase.BOOL_VALUE) {
+            value = conditionProto.getBoolValue();
+        }
         return ScenarioConditionAvro.newBuilder()
-                .setSensorId(condition.getSensorId())
-                .setType(ConditionTypeAvro.valueOf(condition.getType().name()))
-                .setValue(condition.getValue())
-                .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name()))
+                .setSensorId(conditionProto.getSensorId())
+                .setType(ConditionTypeAvro.valueOf(conditionProto.getType().name()))
+                .setValue(value)
+                .setOperation(ConditionOperationAvro.valueOf(conditionProto.getOperation().name()))
                 .build();
     }
 }
