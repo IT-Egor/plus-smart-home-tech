@@ -19,6 +19,12 @@ public class KafkaConfiguration {
     @Value("${kafka.server:localhost:9092}")
     private String kafkaServer;
 
+    @Value(value = "${kafka.hub-event-topic:telemetry.hubs.v1}")
+    private String hubTopic;
+
+    @Value(value = "${kafka.sensor-event-topic:telemetry.sensors.v1}")
+    private String sensorTopic;
+
     @Bean
     KafkaClient getClient() {
         return new KafkaClient() {
@@ -49,6 +55,16 @@ public class KafkaConfiguration {
                     producer.flush();
                     producer.close();
                 }
+            }
+
+            @Override
+            public String getHubTopic() {
+                return hubTopic;
+            }
+
+            @Override
+            public String getSensorTopic() {
+                return sensorTopic;
             }
         };
     }

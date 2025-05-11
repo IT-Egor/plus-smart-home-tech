@@ -1,19 +1,19 @@
-package ru.practicum.plus_smart_home_tech.mapper.hub.impl;
+package ru.practicum.plus_smart_home_tech.handler.hub.impl;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.plus_smart_home_tech.dto.hub.HubEvent;
-import ru.practicum.plus_smart_home_tech.dto.hub.HubEventType;
 import ru.practicum.plus_smart_home_tech.dto.hub.device.added.DeviceAddedEvent;
-import ru.practicum.plus_smart_home_tech.mapper.hub.HubEventAvroMapper;
+import ru.practicum.plus_smart_home_tech.handler.hub.HubEventHandler;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
 @Component
-public class DeviceAddedEventAvroMapper implements HubEventAvroMapper {
+public class DeviceAddedEventHandler implements HubEventHandler {
     @Override
-    public HubEventType getType() {
-        return HubEventType.DEVICE_ADDED;
+    public HubEventProto.PayloadCase getType() {
+        return HubEventProto.PayloadCase.DEVICE_ADDED;
     }
 
     @Override
