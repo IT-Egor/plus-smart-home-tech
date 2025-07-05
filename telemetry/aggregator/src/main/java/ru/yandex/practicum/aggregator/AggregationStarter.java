@@ -1,6 +1,5 @@
 package ru.yandex.practicum.aggregator;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.*;
@@ -11,6 +10,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.practicum.plus_smart_home_tech.kafka.deserialization.SensorEventDeserializer;
@@ -23,24 +23,31 @@ import java.util.*;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AggregationStarter implements CommandLineRunner {
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-    private static final List<String> TOPICS = List.of("telemetry.sensors.v1");
-    private static final String SNAPSHOT_TOPIC = "telemetry.snapshots.v1";
+    private final List<String> sensorTopics;
+    private final String snapshotTopic;
 
     private final KafkaConsumer<String, SensorEventAvro> consumer = new KafkaConsumer<>(getConsumerProperties());
     private final KafkaProducer<String, SpecificRecordBase> producer = new KafkaProducer<>(getProducerProperties());
 
     private final SensorEventUpdater sensorEventUpdater;
 
+    public AggregationStarter(SensorEventUpdater sensorEventUpdater,
+                              @Value("${app.kafka.snapshot-topic}") String snapshotTopic,
+                              @Value("${app.kafka.sensor-topics}") List<String> sensorTopics) {
+        this.sensorEventUpdater = sensorEventUpdater;
+        this.snapshotTopic = snapshotTopic;
+        this.sensorTopics = sensorTopics;
+    }
+
     @Override
     public void run(String[] args) throws Exception {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
         try {
-            consumer.subscribe(TOPICS);
+            consumer.subscribe(sensorTopics);
 
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
@@ -51,7 +58,7 @@ public class AggregationStarter implements CommandLineRunner {
                     if (sensorsSnapshotAvroOpt.isPresent()) {
                         SensorsSnapshotAvro sensorsSnapshotAvro = sensorsSnapshotAvroOpt.get();
                         ProducerRecord<String, SpecificRecordBase> producerRecord =
-                                new ProducerRecord<>(SNAPSHOT_TOPIC,
+                                new ProducerRecord<>(snapshotTopic,
                                         null,
                                         sensorsSnapshotAvro.getTimestamp().getEpochSecond(),
                                         sensorsSnapshotAvro.getHubId(),

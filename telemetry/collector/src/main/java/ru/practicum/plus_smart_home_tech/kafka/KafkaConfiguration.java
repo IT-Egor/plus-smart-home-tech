@@ -15,15 +15,17 @@ import java.util.Properties;
 
 @Configuration
 public class KafkaConfiguration {
+    private final String kafkaServer;
+    private final String hubTopic;
+    private final String sensorTopic;
 
-    @Value("${kafka.server:localhost:9092}")
-    private String kafkaServer;
-
-    @Value(value = "${kafka.hub-event-topic:telemetry.hubs.v1}")
-    private String hubTopic;
-
-    @Value(value = "${kafka.sensor-event-topic:telemetry.sensors.v1}")
-    private String sensorTopic;
+    public KafkaConfiguration(@Value("${app.kafka.server}") String kafkaServer,
+                              @Value(value = "${app.kafka.hub-event-topic}") String hubTopic,
+                              @Value(value = "${app.kafka.sensor-event-topic}") String sensorTopic) {
+        this.kafkaServer = kafkaServer;
+        this.hubTopic = hubTopic;
+        this.sensorTopic = sensorTopic;
+    }
 
     @Bean
     KafkaClient getClient() {
