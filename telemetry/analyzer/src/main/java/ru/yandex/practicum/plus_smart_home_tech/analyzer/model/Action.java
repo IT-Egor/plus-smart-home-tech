@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "actions")
+@SecondaryTable(name = "scenario_actions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "action_id"))
 public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +21,12 @@ public class Action {
 
     @Column(name = "value")
     private Integer value;
+
+    @ManyToOne
+    @JoinColumn(name = "scenario_id", table = "scenario_actions")
+    private Scenario scenario;
+
+    @ManyToOne
+    @JoinColumn(name = "sensor_id", table = "scenario_actions")
+    private Sensor sensor;
 }
