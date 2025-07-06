@@ -10,10 +10,9 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.plus_smart_home_tech.analyzer.handler.hub.HubEventHandler;
-import ru.yandex.practicum.plus_smart_home_tech.analyzer.handler.hub.HubEventHandlerFactory;
-import ru.yandex.practicum.plus_smart_home_tech.serialization.kafka.deserialization.HubEventDeserializer;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
+import ru.yandex.practicum.plus_smart_home_tech.analyzer.handler.snapshot.SnapshotHandler;
+import ru.yandex.practicum.plus_smart_home_tech.serialization.kafka.deserialization.SensorSnapshotDeserializer;
 
 import java.time.Duration;
 import java.util.List;
@@ -21,39 +20,38 @@ import java.util.Properties;
 
 @Slf4j
 @Component
-public class HubEventProcessor implements Runnable {
+public class SnapshotProcessor {
     private final List<String> topics;
     private final String groupId;
     private final String bootstrapServer;
 
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
-    private final HubEventHandlerFactory handlerFactory;
-    private final KafkaConsumer<String, HubEventAvro> consumer;
+    private final KafkaConsumer<String, SensorsSnapshotAvro> consumer;
+    private final SnapshotHandler handler;
 
-    public HubEventProcessor(@Value("${app.kafka.hub.bootstrap-server}") String bootstrapServer,
-                             @Value("${app.kafka.hub.consumer-topics}") List<String> topics,
-                             @Value("${app.kafka.hub.group-id}") String groupId,
-                             HubEventHandlerFactory handlerFactory) {
+    public SnapshotProcessor(@Value("${app.kafka.snapshot.bootstrap-server}") String bootstrapServer,
+                             @Value("${app.kafka.snapshot.consumer-topics}") List<String> topics,
+                             @Value("${app.kafka.snapshot.group-id}") String groupId,
+                             SnapshotHandler handler) {
         this.bootstrapServer = bootstrapServer;
         this.topics = topics;
         this.groupId = groupId;
-        this.handlerFactory = handlerFactory;
+        this.handler = handler;
         consumer = new KafkaConsumer<>(getConsumerProperties());
     }
 
-    @Override
-    public void run() {
+    public void start() {
         try {
+            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
             consumer.subscribe(topics);
 
             while (true) {
-                ConsumerRecords<String, HubEventAvro> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
-                for (ConsumerRecord<String, HubEventAvro> record : records) {
-                    HubEventAvro hubEventAvro = record.value();
-                    log.info("Received hub event from hub id '{}'", hubEventAvro.getHubId());
-                    HubEventHandler handler = handlerFactory.getHandler(hubEventAvro.getPayload().getClass());
-                    handler.handle(hubEventAvro);
+                ConsumerRecords<String, SensorsSnapshotAvro> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
+                    SensorsSnapshotAvro sensorsSnapshotAvro = record.value();
+                    log.info("Received snapshot from hub id '{}'", sensorsSnapshotAvro.getHubId());
+                    handler.handle(sensorsSnapshotAvro);
                 }
             }
         } catch (WakeupException ignored) {
@@ -65,7 +63,7 @@ public class HubEventProcessor implements Runnable {
                 consumer.commitSync();
             } finally {
                 consumer.close();
-                log.info("Consumer closed");
+                log.info("Consumer close");
             }
         }
     }
@@ -81,7 +79,7 @@ public class HubEventProcessor implements Runnable {
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, HubEventDeserializer.class);
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorSnapshotDeserializer.class);
         return properties;
     }
 }

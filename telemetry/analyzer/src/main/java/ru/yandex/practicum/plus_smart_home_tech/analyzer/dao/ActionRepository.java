@@ -3,6 +3,10 @@ package ru.yandex.practicum.plus_smart_home_tech.analyzer.dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.yandex.practicum.plus_smart_home_tech.analyzer.model.Action;
 
+import java.util.Collection;
+
 public interface ActionRepository extends JpaRepository<Action, Long> {
     void deleteByScenarioId(Long scenarioId);
+
+    Collection<Action> findAllByScenarioId(Long scenarioId);
 }
