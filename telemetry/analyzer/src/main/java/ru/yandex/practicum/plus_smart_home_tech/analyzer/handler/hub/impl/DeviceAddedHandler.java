@@ -29,7 +29,9 @@ public class DeviceAddedHandler implements HubEventHandler {
 
         Sensor sensor = EntityMapper.deviceAvroToSensor(deviceAddedEvent, event.getHubId());
 
-        sensorRepository.save(sensor);
-        log.info("Device added '{}'", sensor);
+        if (!sensorRepository.existsById(sensor.getId())) {
+            sensorRepository.save(sensor);
+            log.info("Device added '{}'", sensor);
+        }
     }
 }
