@@ -26,7 +26,6 @@ import java.util.Properties;
 public class AggregationStarter implements CommandLineRunner {
     private final KafkaConfig kafkaConfig;
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
     private final KafkaConsumer<String, SensorEventAvro> consumer;
     private final KafkaProducer<String, SpecificRecordBase> producer;
@@ -45,12 +44,13 @@ public class AggregationStarter implements CommandLineRunner {
     public void run(String[] args) throws Exception {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
         String snapshotTopic = kafkaConfig.getProducer().getTopic();
+        Duration pollTimeout = kafkaConfig.getConsumer().getPollTimeout();
 
         try {
             consumer.subscribe(kafkaConfig.getConsumer().getTopics());
 
             while (true) {
-                ConsumerRecords<String, SensorEventAvro> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
+                ConsumerRecords<String, SensorEventAvro> records = consumer.poll(pollTimeout);
 
                 int count = 0;
                 for (ConsumerRecord<String, SensorEventAvro> record : records) {

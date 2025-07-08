@@ -18,4 +18,4 @@ aggregator:
         "value.deserializer": "ru.yandex.practicum.plus_smart_home_tech.serialization.kafka.deserialization.SensorEventDeserializer"
       topics:
         - "telemetry.sensors.v1"
-      poll-timeout: 100ms
+      poll-timeout: 1000ms
