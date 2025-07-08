@@ -2,52 +2,52 @@ package ru.yandex.practicum.plus_smart_home_tech.aggregator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.plus_smart_home_tech.serialization.kafka.deserialization.SensorEventDeserializer;
-import ru.yandex.practicum.plus_smart_home_tech.serialization.kafka.serialization.GeneralAvroSerializer;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 @Slf4j
 @Component
 public class AggregationStarter implements CommandLineRunner {
+    private final KafkaConfig kafkaConfig;
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
-    private final List<String> sensorTopics;
-    private final String snapshotTopic;
 
-    private final KafkaConsumer<String, SensorEventAvro> consumer = new KafkaConsumer<>(getConsumerProperties());
-    private final KafkaProducer<String, SpecificRecordBase> producer = new KafkaProducer<>(getProducerProperties());
+    private final KafkaConsumer<String, SensorEventAvro> consumer;
+    private final KafkaProducer<String, SpecificRecordBase> producer;
 
     private final SensorEventUpdater sensorEventUpdater;
 
     public AggregationStarter(SensorEventUpdater sensorEventUpdater,
-                              @Value("${app.kafka.snapshot-topic}") String snapshotTopic,
-                              @Value("${app.kafka.sensor-topics}") List<String> sensorTopics) {
+                              KafkaConfig kafkaConfig) {
+        this.kafkaConfig = kafkaConfig;
         this.sensorEventUpdater = sensorEventUpdater;
-        this.snapshotTopic = snapshotTopic;
-        this.sensorTopics = sensorTopics;
+        consumer = new KafkaConsumer<>(getConsumerProperties());
+        producer = new KafkaProducer<>(getProducerProperties());
     }
 
     @Override
     public void run(String[] args) throws Exception {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+        String snapshotTopic = kafkaConfig.getProducer().getTopic();
 
         try {
-            consumer.subscribe(sensorTopics);
+            consumer.subscribe(kafkaConfig.getConsumer().getTopics());
 
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
@@ -88,21 +88,15 @@ public class AggregationStarter implements CommandLineRunner {
         }
     }
 
-    private static Properties getConsumerProperties() {
+    private Properties getConsumerProperties() {
         Properties properties = new Properties();
-        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "SomeConsumer");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "some.group.id");
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
+        properties.putAll(kafkaConfig.getConsumer().getProperties());
         return properties;
     }
 
-    private static Properties getProducerProperties() {
+    private Properties getProducerProperties() {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
+        properties.putAll(kafkaConfig.getProducer().getProperties());
         return properties;
     }
 
