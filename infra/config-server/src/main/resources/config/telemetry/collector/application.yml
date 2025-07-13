@@ -22,3 +22,12 @@ app:
     server: localhost:9092
     hub-event-topic: telemetry.hubs.v1
     sensor-event-topic: telemetry.sensors.v1
+
+spring:
+  application:
+    name: collector
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
