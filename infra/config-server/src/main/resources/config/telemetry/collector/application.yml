@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+grpc:
+  server:
+    port: 59091
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.springframework.orm.jpa: INFO
+    org.springframework.transaction: INFO
+    org.springframework.transaction.interceptor: INFO
+    org.springframework.orm.jpa.JpaTransactionManager: INFO
+    org.zalando.logbook: TRACE
+  logbook:
+    format:
+      style: http
+
+app:
+  kafka:
+    server: localhost:9092
+    hub-event-topic: telemetry.hubs.v1
+    sensor-event-topic: telemetry.sensors.v1
