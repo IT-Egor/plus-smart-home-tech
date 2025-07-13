@@ -19,3 +19,12 @@ aggregator:
       topics:
         - "telemetry.sensors.v1"
       poll-timeout: 1000ms
+
+spring:
+  application:
+    name: aggregator
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
