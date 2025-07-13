@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: analyzer
   jpa:
     hibernate:
       ddl-auto: validate
@@ -35,3 +37,8 @@ app:
       consumer-topics: telemetry.snapshots.v1
       bootstrap-server: localhost:9092
       group-id: snapshot.processor
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
