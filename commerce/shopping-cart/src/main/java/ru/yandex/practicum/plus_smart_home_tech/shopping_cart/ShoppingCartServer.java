@@ -6,8 +6,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableFeignClients
 @SpringBootApplication
-public class ShoppingCart {
+public class ShoppingCartServer {
     public static void main(String[] args) {
-        SpringApplication.run(ShoppingCart.class, args);
+        SpringApplication.run(ShoppingCartServer.class, args);
     }
 }

@@ -10,6 +10,10 @@ import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.mapper.ShoppingCar
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.model.ShoppingCart;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.service.ShoppingCartService;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,18 +25,40 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto getCart(String username) {
         checkUserAuthorization(username);
         return shoppingCartMapper.toResponseDto(
-                shoppingCartRepository.findByUsername(username).orElseGet(() -> {
-                    ShoppingCart shoppingCart = new ShoppingCart();
-                    shoppingCart.setUsername(username);
-                    shoppingCart.setIsActive(true);
-                    return shoppingCartRepository.save(shoppingCart);
-                })
+                shoppingCartRepository.findByUsername(username).orElseGet(() ->
+                        shoppingCartRepository.save(createCart(username, new HashMap<>()))
+                )
         );
+    }
+
+    @Override
+    public ShoppingCartResponseDto addProductToCart(String username, Map<UUID, Long> products) {
+        checkUserAuthorization(username);
+
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUsername(username)
+                .map(existingCart -> updateCartProducts(existingCart, products))
+                .orElseGet(() -> createCart(username, products));
+
+        return shoppingCartMapper.toResponseDto(shoppingCartRepository.save(shoppingCart));
     }
 
     private void checkUserAuthorization(String username) {
         if (username.isBlank()) {
             throw new UnauthorizedException("Username must not be blank");
         }
+    }
+
+    private ShoppingCart createCart(String username, Map<UUID, Long> products) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUsername(username);
+        shoppingCart.setProducts(products);
+        shoppingCart.setIsActive(true);
+        return shoppingCart;
+    }
+
+    private ShoppingCart updateCartProducts(ShoppingCart cart, Map<UUID, Long> newProducts) {
+        newProducts.forEach((productId, quantity) ->
+                cart.getProducts().merge(productId, quantity, Long::sum));
+        return cart;
     }
 }
