@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class ShoppingCart {
     @Column(name = "quantity")
     @MapKeyColumn(name = "product_id")
     @CollectionTable(name = "cart_items", joinColumns = @JoinColumn(name = "cart_id"))
-    private Map<UUID, Long> products;
+    private Map<UUID, Long> products = new HashMap<>();
 
     @Column(name = "is_active")
     private Boolean isActive = true;

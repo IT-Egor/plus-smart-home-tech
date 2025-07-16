@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
 
 import java.util.Objects;
 
@@ -60,6 +61,18 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason(reasonMessage)
                 .status(HttpStatus.NOT_FOUND.value())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleUnauthorizedException(UnauthorizedException e) {
+        String reasonMessage = "User is not authorized";
+        log.error("UNAUTHORIZED: {}", reasonMessage, e);
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(HttpStatus.UNAUTHORIZED.value())
                 .build();
     }
 
