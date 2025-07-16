@@ -27,4 +27,10 @@ public class ShoppingCartController {
                                              @RequestBody Map<UUID, Long> products) {
         return shoppingCartService.addProductToCart(username, products);
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    void deactivateUserCart(@RequestParam String username) {
+        shoppingCartService.deleteUserCart(username);
+    }
 }

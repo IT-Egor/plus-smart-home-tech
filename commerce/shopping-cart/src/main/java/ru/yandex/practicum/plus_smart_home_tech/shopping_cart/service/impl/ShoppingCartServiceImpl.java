@@ -42,6 +42,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCartMapper.toResponseDto(shoppingCartRepository.save(shoppingCart));
     }
 
+    @Override
+    public void deleteUserCart(String username) {
+        checkUserAuthorization(username);
+        shoppingCartRepository.findByUsername(username)
+                .ifPresent(cart -> {
+                    cart.setIsActive(false);
+                    shoppingCartRepository.save(cart);
+                });
+    }
+
     private void checkUserAuthorization(String username) {
         if (username.isBlank()) {
             throw new UnauthorizedException("Username must not be blank");
