@@ -10,4 +10,6 @@ public interface ProductService {
     Page<ProductDto> getProductsByCategory(ProductCategory category, Pageable pageable);
 
     ProductDto addProduct(@Valid ProductDto productDto);
+
+    ProductDto updateProduct(@Valid ProductDto productDto);
 }

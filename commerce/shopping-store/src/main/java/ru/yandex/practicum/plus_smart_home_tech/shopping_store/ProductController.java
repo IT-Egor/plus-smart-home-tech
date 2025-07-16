@@ -29,4 +29,10 @@ public class ProductController {
     public ProductDto addProduct(@Valid @RequestBody ProductDto productDto) {
         return productService.addProduct(productDto);
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
+        return productService.updateProduct(productDto);
+    }
 }
