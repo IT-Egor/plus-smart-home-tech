@@ -1,0 +1,35 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: shopping-cart
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5435/cart
+    username: cart
+    password: cart
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.springframework.orm.jpa: INFO
+    org.springframework.transaction: INFO
+    org.springframework.transaction.interceptor: INFO
+    org.springframework.orm.jpa.JpaTransactionManager: INFO
+    org.zalando.logbook: TRACE
+  logbook:
+    format:
+      style: http
