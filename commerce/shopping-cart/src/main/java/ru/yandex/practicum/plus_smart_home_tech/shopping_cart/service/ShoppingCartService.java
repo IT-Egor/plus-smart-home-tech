@@ -1,17 +1,20 @@
 package ru.yandex.practicum.plus_smart_home_tech.shopping_cart.service;
 
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartResponseDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.UpdateProductQuantityRequestDto;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public interface ShoppingCartService {
-    ShoppingCartResponseDto getCart(String username);
+    ShoppingCartResponseDto getShoppingCart(String username);
 
-    ShoppingCartResponseDto addProductToCart(String username, Map<UUID, Long> products);
+    ShoppingCartResponseDto addProductToShoppingCart(String username, Map<UUID, Long> products);
 
-    void deleteUserCart(String username);
+    void deactivateUserShoppingCart(String username);
 
-    ShoppingCartResponseDto removeFromCart(String username, Set<UUID> productIds);
+    ShoppingCartResponseDto removeFromShoppingCart(String username, Set<UUID> productIds);
+
+    ShoppingCartResponseDto changeProductQuantity(String username, UpdateProductQuantityRequestDto request);
 }
