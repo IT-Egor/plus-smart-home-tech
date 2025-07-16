@@ -25,5 +25,5 @@ public class WarehouseProduct {
     private boolean fragile;
 
     @Column(name = "quantity")
-    private Long quantity;
+    private long quantity;
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddProductToWarehouseRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.NewProductInWarehouseRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
@@ -49,12 +50,24 @@ public class WarehouseServiceImpl implements WarehouseService {
         return createOrderDto(shoppingCart, products);
     }
 
+    @Override
+    public void addProductToWarehouse(AddProductToWarehouseRequestDto request) {
+        WarehouseProduct product = findProductById(request.getProductId());
+        product.setQuantity(product.getQuantity() + request.getQuantity());
+        warehouseRepository.save(product);
+    }
+
     private void checkProductsAvailability(Set<UUID> productIds, Map<UUID, WarehouseProduct> products) {
         for (UUID productId : productIds) {
             if (!products.containsKey(productId)) {
                 throw new NotFoundException("Product with id `%s` not found".formatted(productId));
             }
         }
+    }
+
+    private WarehouseProduct findProductById(UUID productId) {
+        return warehouseRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product with id `%s` not found".formatted(productId)));
     }
 
     private OrderDto createOrderDto(ShoppingCartDto shoppingCart, Map<UUID, WarehouseProduct> products) {
