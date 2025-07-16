@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.SetProductQuantityStateRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
@@ -49,6 +50,17 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
         product.setProductState(ProductState.DEACTIVATE);
+        productRepository.save(product);
+        return true;
+    }
+
+    @Override
+    public Boolean setQuantityState(SetProductQuantityStateRequestDto request) {
+        Product product = findProductById(request.getProductId());
+        if (product.getQuantityState().equals(request.getQuantityState())) {
+            return false;
+        }
+        product.setQuantityState(request.getQuantityState());
         productRepository.save(product);
         return true;
     }

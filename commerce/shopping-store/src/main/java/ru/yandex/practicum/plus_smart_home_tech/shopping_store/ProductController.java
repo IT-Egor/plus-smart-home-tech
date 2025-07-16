@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.SetProductQuantityStateRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.service.ProductService;
 
@@ -21,9 +21,8 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PagedModel<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
-        Page<ProductDto> productDtos = productService.getProductsByCategory(category, pageable);
-        return new PagedModel<>(productDtos);
+    public Page<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
+        return productService.getProductsByCategory(category, pageable);
     }
 
     @PutMapping
@@ -42,6 +41,12 @@ public class ProductController {
     @PostMapping("/removeProductFromStore")
     Boolean removeProduct(@RequestBody UUID productId) {
         return productService.removeProduct(productId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/quantityState")
+    Boolean setQuantityState(@Valid SetProductQuantityStateRequestDto request) {
+        return productService.setQuantityState(request);
     }
 
     @GetMapping("/{productId}")
