@@ -2,6 +2,9 @@ package ru.yandex.practicum.plus_smart_home_tech.shopping_store.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.QuantityState;
 
 import java.util.UUID;
 
