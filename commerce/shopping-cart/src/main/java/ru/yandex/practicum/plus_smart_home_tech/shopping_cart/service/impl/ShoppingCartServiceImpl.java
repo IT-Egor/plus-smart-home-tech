@@ -3,7 +3,7 @@ package ru.yandex.practicum.plus_smart_home_tech.shopping_cart.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartResponseDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.UpdateProductQuantityRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
@@ -25,9 +25,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
 
     @Override
-    public ShoppingCartResponseDto getShoppingCart(String username) {
+    public ShoppingCartDto getShoppingCart(String username) {
         checkUserAuthorization(username);
-        return shoppingCartMapper.toResponseDto(
+        return shoppingCartMapper.toDto(
                 shoppingCartRepository.findByUsername(username).orElseGet(() ->
                         shoppingCartRepository.save(createCart(username, new HashMap<>()))
                 )
@@ -35,14 +35,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartResponseDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
+    public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
         checkUserAuthorization(username);
 
         ShoppingCart shoppingCart = shoppingCartRepository.findByUsername(username)
                 .map(existingCart -> updateCartProducts(existingCart, products))
                 .orElseGet(() -> createCart(username, products));
 
-        return shoppingCartMapper.toResponseDto(shoppingCartRepository.save(shoppingCart));
+        return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
     @Override
@@ -56,24 +56,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartResponseDto removeFromShoppingCart(String username, Set<UUID> productIds) {
+    public ShoppingCartDto removeFromShoppingCart(String username, Set<UUID> productIds) {
         checkUserAuthorization(username);
         ShoppingCart shoppingCart = findCartByUsername(username);
         for (UUID productId : productIds) {
             shoppingCart.getProducts().remove(productId);
         }
-        return shoppingCartMapper.toResponseDto((shoppingCartRepository.save(shoppingCart)));
+        return shoppingCartMapper.toDto((shoppingCartRepository.save(shoppingCart)));
     }
 
     @Override
-    public ShoppingCartResponseDto changeProductQuantity(String username, UpdateProductQuantityRequestDto request) {
+    public ShoppingCartDto changeProductQuantity(String username, UpdateProductQuantityRequestDto request) {
         checkUserAuthorization(username);
         ShoppingCart shoppingCart = findCartByUsername(username);
         if (!shoppingCart.getProducts().containsKey(request.getProductId())) {
             throw new NotFoundException("Product `%s` not found in cart".formatted(request.getProductId()));
         }
         shoppingCart.getProducts().put(request.getProductId(), request.getNewQuantity());
-        return shoppingCartMapper.toResponseDto(shoppingCartRepository.save(shoppingCart));
+        return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
     private ShoppingCart findCartByUsername(String username) {

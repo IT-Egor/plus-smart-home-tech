@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoppingCartResponseDto {
+public class ShoppingCartDto {
     @NotNull(message = "Shopping cart id is required")
     private UUID shoppingCartId;
 
