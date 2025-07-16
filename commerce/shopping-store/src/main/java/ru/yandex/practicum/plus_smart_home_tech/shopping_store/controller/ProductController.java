@@ -27,8 +27,8 @@ public class ProductController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto addProduct(@Valid @RequestBody ProductDto productDto) {
-        return productService.addProduct(productDto);
+    public ProductDto createNewProduct(@Valid @RequestBody ProductDto productDto) {
+        return productService.createNewProduct(productDto);
     }
 
     @PostMapping
@@ -39,19 +39,19 @@ public class ProductController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/removeProductFromStore")
-    Boolean removeProduct(@RequestBody UUID productId) {
-        return productService.removeProduct(productId);
+    Boolean removeProductFromStore(@RequestBody UUID productId) {
+        return productService.removeProductFromStore(productId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/quantityState")
-    Boolean setQuantityState(@Valid SetProductQuantityStateRequestDto request) {
-        return productService.setQuantityState(request);
+    Boolean setProductQuantityState(@Valid SetProductQuantityStateRequestDto request) {
+        return productService.setProductQuantityState(request);
     }
 
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    ProductDto getProductById(@PathVariable UUID productId) {
+    ProductDto getProduct(@PathVariable UUID productId) {
         return productService.getProductById(productId);
     }
 }

@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto addProduct(ProductDto productDto) {
+    public ProductDto createNewProduct(ProductDto productDto) {
         Product product = productMapper.toEntity(productDto);
         return productMapper.toDto(productRepository.save(product));
     }
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean removeProduct(UUID productId) {
+    public Boolean removeProductFromStore(UUID productId) {
         Product product = findProductById(productId);
         if (product.getProductState().equals(ProductState.DEACTIVATE)) {
             return false;
@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean setQuantityState(SetProductQuantityStateRequestDto request) {
+    public Boolean setProductQuantityState(SetProductQuantityStateRequestDto request) {
         Product product = findProductById(request.getProductId());
         if (product.getQuantityState().equals(request.getQuantityState())) {
             return false;
