@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.ProductMapper;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.ProductRepository;
@@ -39,6 +40,22 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto updateProduct(ProductDto productDto) {
         findProductById(productDto.getProductId());
         return productMapper.toDto(productRepository.save(productMapper.toEntity(productDto)));
+    }
+
+    @Override
+    public Boolean removeProduct(UUID productId) {
+        Product product = findProductById(productId);
+        if (product.getProductState().equals(ProductState.DEACTIVATE)) {
+            return false;
+        }
+        product.setProductState(ProductState.DEACTIVATE);
+        productRepository.save(product);
+        return true;
+    }
+
+    @Override
+    public ProductDto getProductById(UUID productId) {
+        return productMapper.toDto(findProductById(productId));
     }
 
     private Product findProductById(UUID productId) {

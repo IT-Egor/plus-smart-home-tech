@@ -11,6 +11,8 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.Produc
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.service.ProductService;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-store")
@@ -34,5 +36,17 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(productDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/removeProductFromStore")
+    Boolean removeProduct(@RequestBody UUID productId) {
+        return productService.removeProduct(productId);
+    }
+
+    @GetMapping("/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    ProductDto getProductById(@PathVariable UUID productId) {
+        return productService.getProductById(productId);
     }
 }
