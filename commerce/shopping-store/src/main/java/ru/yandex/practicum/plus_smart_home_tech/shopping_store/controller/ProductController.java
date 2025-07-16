@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.SetProductQuantityStateRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.StoreFeign;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.service.ProductService;
 
 import java.util.UUID;
@@ -16,42 +17,42 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-store")
-public class ProductController {
+public class ProductController implements StoreFeign {
     private final ProductService productService;
 
-    @GetMapping
+    @Override
     @ResponseStatus(HttpStatus.OK)
     public Page<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
         return productService.getProductsByCategory(category, pageable);
     }
 
-    @PutMapping
+    @Override
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto createNewProduct(@Valid @RequestBody ProductDto productDto) {
         return productService.createNewProduct(productDto);
     }
 
-    @PostMapping
+    @Override
     @ResponseStatus(HttpStatus.OK)
     public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(productDto);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/removeProductFromStore")
-    Boolean removeProductFromStore(@RequestBody UUID productId) {
+    public Boolean removeProductFromStore(@RequestBody UUID productId) {
         return productService.removeProductFromStore(productId);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/quantityState")
-    Boolean setProductQuantityState(@Valid SetProductQuantityStateRequestDto request) {
+    public Boolean setProductQuantityState(@Valid SetProductQuantityStateRequestDto request) {
         return productService.setProductQuantityState(request);
     }
 
-    @GetMapping("/{productId}")
+    @Override
     @ResponseStatus(HttpStatus.OK)
-    ProductDto getProduct(@PathVariable UUID productId) {
+    public ProductDto getProduct(@PathVariable UUID productId) {
         return productService.getProductById(productId);
     }
 }
