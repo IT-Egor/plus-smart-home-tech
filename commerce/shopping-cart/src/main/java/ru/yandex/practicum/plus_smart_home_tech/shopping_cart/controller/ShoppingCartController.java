@@ -7,6 +7,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_car
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.service.ShoppingCartService;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -32,5 +33,12 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.OK)
     void deactivateUserCart(@RequestParam String username) {
         shoppingCartService.deleteUserCart(username);
+    }
+
+    @PostMapping("/remove")
+    @ResponseStatus(HttpStatus.OK)
+    ShoppingCartResponseDto removeFromCart(@RequestParam String username,
+                                           @RequestBody Set<UUID> productIds) {
+        return shoppingCartService.removeFromCart(username, productIds);
     }
 }

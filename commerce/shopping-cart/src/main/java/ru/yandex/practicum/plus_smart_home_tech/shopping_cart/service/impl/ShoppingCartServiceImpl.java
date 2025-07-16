@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartResponseDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.dao.ShoppingCartRepository;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.mapper.ShoppingCartMapper;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.service.ShoppingCa
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -50,6 +52,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     cart.setIsActive(false);
                     shoppingCartRepository.save(cart);
                 });
+    }
+
+    @Override
+    public ShoppingCartResponseDto removeFromCart(String username, Set<UUID> productIds) {
+        checkUserAuthorization(username);
+        ShoppingCart cart = findCartByUsername(username);
+        for (UUID productId : productIds) {
+            cart.getProducts().remove(productId);
+        }
+        return shoppingCartMapper.toResponseDto((shoppingCartRepository.save(cart)));
+    }
+
+    private ShoppingCart findCartByUsername(String username) {
+        return shoppingCartRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User `%s` cart not found".formatted(username)));
     }
 
     private void checkUserAuthorization(String username) {
