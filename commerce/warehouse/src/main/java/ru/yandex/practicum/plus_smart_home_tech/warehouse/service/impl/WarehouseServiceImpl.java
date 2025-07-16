@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddProductToWarehouseRequestDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddressResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.NewProductInWarehouseRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
@@ -16,7 +17,9 @@ import ru.yandex.practicum.plus_smart_home_tech.warehouse.model.Dimension;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.service.WarehouseService;
 
+import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -28,6 +31,12 @@ import java.util.stream.Collectors;
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final WarehouseProductMapper warehouseProductMapper;
+
+    private static final String[] ADDRESSES =
+            new String[] {"ADDRESS_1", "ADDRESS_2"};
+
+    private static final String CURRENT_ADDRESS =
+            ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 1)];
 
     @Override
     public void newProductInWarehouse(NewProductInWarehouseRequestDto request) {
@@ -55,6 +64,18 @@ public class WarehouseServiceImpl implements WarehouseService {
         WarehouseProduct product = findProductById(request.getProductId());
         product.setQuantity(product.getQuantity() + request.getQuantity());
         warehouseRepository.save(product);
+    }
+
+    @Override
+    public AddressResponseDto getWarehouseAddress() {
+        String address = CURRENT_ADDRESS;
+        return AddressResponseDto.builder()
+                .country(address)
+                .city(address)
+                .street(address)
+                .house(address)
+                .flat(address)
+                .build();
     }
 
     private void checkProductsAvailability(Set<UUID> productIds, Map<UUID, WarehouseProduct> products) {

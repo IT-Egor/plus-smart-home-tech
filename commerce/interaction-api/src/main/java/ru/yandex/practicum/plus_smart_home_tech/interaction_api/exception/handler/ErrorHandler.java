@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotEnoughProductsInWarehouseException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
 
@@ -73,6 +75,30 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason(reasonMessage)
                 .status(HttpStatus.UNAUTHORIZED.value())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e) {
+        String reasonMessage = "Object already exists";
+        log.error("ALREADY EXISTS: {}", reasonMessage, e);
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotEnoughProductsInWarehouseException(NotEnoughProductsInWarehouseException e) {
+        String reasonMessage = "Not enough products in warehouse";
+        log.error("NOT ENOUGH PRODUCTS: {}", reasonMessage, e);
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(HttpStatus.BAD_REQUEST.value())
                 .build();
     }
 
