@@ -14,11 +14,11 @@ import java.util.UUID;
 @Table(name = "products")
 public class Product {
     @Id
-    @Column(name = "product_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productId;
 
-    @Column(name = "product_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String productName;
 
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
