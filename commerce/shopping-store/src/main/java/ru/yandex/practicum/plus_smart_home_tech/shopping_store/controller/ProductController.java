@@ -1,4 +1,4 @@
-package ru.yandex.practicum.plus_smart_home_tech.shopping_store;
+package ru.yandex.practicum.plus_smart_home_tech.shopping_store.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

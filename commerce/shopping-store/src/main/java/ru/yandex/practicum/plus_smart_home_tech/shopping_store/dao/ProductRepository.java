@@ -1,4 +1,4 @@
-package ru.yandex.practicum.plus_smart_home_tech.shopping_store;
+package ru.yandex.practicum.plus_smart_home_tech.shopping_store.dao;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

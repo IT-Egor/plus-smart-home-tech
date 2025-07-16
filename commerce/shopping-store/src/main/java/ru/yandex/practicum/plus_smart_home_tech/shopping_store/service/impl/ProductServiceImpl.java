@@ -10,8 +10,8 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.SetPro
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
-import ru.yandex.practicum.plus_smart_home_tech.shopping_store.ProductMapper;
-import ru.yandex.practicum.plus_smart_home_tech.shopping_store.ProductRepository;
+import ru.yandex.practicum.plus_smart_home_tech.shopping_store.mapper.ProductMapper;
+import ru.yandex.practicum.plus_smart_home_tech.shopping_store.dao.ProductRepository;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.model.Product;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_store.service.ProductService;
 
