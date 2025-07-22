@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.UpdateProductQuantityRequestDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NoProductsInShoppingCartException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
@@ -57,6 +58,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto removeFromShoppingCart(String username, Set<UUID> productIds) {
         checkUserAuthorization(username);
         ShoppingCart shoppingCart = findCartByUsername(username);
+
+        if (shoppingCart.getProducts().isEmpty()) {
+            throw new NoProductsInShoppingCartException("Shopping card `%s` is empty".formatted(shoppingCart.getShoppingCartId()));
+        }
+
         for (UUID productId : productIds) {
             shoppingCart.getProducts().remove(productId);
         }
