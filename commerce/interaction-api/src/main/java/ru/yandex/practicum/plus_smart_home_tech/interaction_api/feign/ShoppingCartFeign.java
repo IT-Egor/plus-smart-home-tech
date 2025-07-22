@@ -2,6 +2,8 @@ package ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign;
 
 import feign.FeignException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
@@ -18,7 +20,10 @@ public interface ShoppingCartFeign {
 
     @PutMapping
     ShoppingCartDto addProductToShoppingCart(@RequestParam String username,
-                                             @RequestBody Map<UUID, Long> products) throws FeignException;
+                                             @RequestBody
+                                             @NotNull
+                                             @NotEmpty
+                                             Map<UUID, Long> products) throws FeignException;
 
     @DeleteMapping
     void deactivateUserShoppingCart(@RequestParam String username) throws FeignException;

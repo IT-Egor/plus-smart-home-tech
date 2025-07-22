@@ -1,6 +1,8 @@
 package ru.yandex.practicum.plus_smart_home_tech.shopping_cart.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,10 @@ public class ShoppingCartController implements ShoppingCartFeign {
     @Override
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartDto addProductToShoppingCart(@RequestParam String username,
-                                                    @RequestBody Map<UUID, Long> products) {
+                                                    @RequestBody
+                                                    @NotNull
+                                                    @NotEmpty
+                                                    Map<UUID, Long> products) {
         return shoppingCartService.addProductToShoppingCart(username, products);
     }
 
