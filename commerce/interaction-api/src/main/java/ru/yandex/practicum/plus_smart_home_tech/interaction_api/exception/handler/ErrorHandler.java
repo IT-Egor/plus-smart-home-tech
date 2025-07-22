@@ -1,23 +1,34 @@
 package ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.handler;
 
+import feign.FeignException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotEnoughProductsInWarehouseException;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.*;
 
 import java.util.Objects;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleFeignException(FeignException e) {
+        String reasonMessage = "Feign error";
+        log.error("FEIGN_ERROR: {}", reasonMessage, e);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(e.status())
+                .build();
+        return ResponseEntity.status(e.status()).body(errorResponse);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(ValidationException e) {
@@ -46,6 +57,18 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         String reasonMessage = "Handler method not valid";
+        log.error("BAD_REQUEST: {}", reasonMessage, e);
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNoProductsInShoppingCartException(NoProductsInShoppingCartException e) {
+        String reasonMessage = "Shopping cart is empty";
         log.error("BAD_REQUEST: {}", reasonMessage, e);
         return ErrorResponse.builder()
                 .message(e.getMessage())
