@@ -22,6 +22,12 @@ spring:
     username: cart
     password: cart
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+
 logging:
   level:
     org.springframework.web: INFO
