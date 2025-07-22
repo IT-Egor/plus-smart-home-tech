@@ -7,6 +7,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_car
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.UpdateProductQuantityRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.dao.ShoppingCartRepository;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.plus_smart_home_tech.shopping_cart.model.ShoppingCart;
@@ -23,25 +24,22 @@ import java.util.UUID;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
+    private final WarehouseFeign warehouseFeign;
 
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
         checkUserAuthorization(username);
-        return shoppingCartMapper.toDto(
-                shoppingCartRepository.findByUsername(username).orElseGet(() ->
-                        shoppingCartRepository.save(createCart(username, new HashMap<>()))
-                )
-        );
+        return shoppingCartMapper.toDto(getOrElseCreateShoppingCart(username));
     }
 
     @Override
     public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
         checkUserAuthorization(username);
 
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUsername(username)
-                .map(existingCart -> updateCartProducts(existingCart, products))
-                .orElseGet(() -> createCart(username, products));
+        ShoppingCart shoppingCart = getOrElseCreateShoppingCart(username);
+        updateCartProducts(shoppingCart, products);
 
+        warehouseFeign.checkProductQuantity(shoppingCartMapper.toDto(shoppingCart));
         return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
@@ -73,6 +71,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             throw new NotFoundException("Product `%s` not found in cart".formatted(request.getProductId()));
         }
         shoppingCart.getProducts().put(request.getProductId(), request.getNewQuantity());
+        warehouseFeign.checkProductQuantity(shoppingCartMapper.toDto(shoppingCart));
         return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
@@ -95,9 +94,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCart;
     }
 
-    private ShoppingCart updateCartProducts(ShoppingCart shoppingCart, Map<UUID, Long> newProducts) {
+    private void updateCartProducts(ShoppingCart shoppingCart, Map<UUID, Long> newProducts) {
         newProducts.forEach((productId, quantity) ->
                 shoppingCart.getProducts().merge(productId, quantity, Long::sum));
-        return shoppingCart;
+    }
+
+    private ShoppingCart getOrElseCreateShoppingCart(String username) {
+        return shoppingCartRepository.findByUsername(username)
+                .orElseGet(() ->
+                        shoppingCartRepository.save(createCart(username, new HashMap<>()))
+                );
     }
 }
