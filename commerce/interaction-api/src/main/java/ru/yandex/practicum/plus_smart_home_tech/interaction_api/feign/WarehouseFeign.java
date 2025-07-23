@@ -8,21 +8,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddProductToWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddressResponseDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.NewProductInWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseFeign {
     @PutMapping
-    void newProductInWarehouse(@RequestBody @Valid NewProductInWarehouseRequestDto request) throws FeignException;
+    void newProductInWarehouse(@Valid @RequestBody NewProductInWarehouseRequestDto request) throws FeignException;
+
+    @PostMapping("/shipped")
+    void shipToDelivery(@Valid @RequestBody ShipToDeliveryRequestDto request) throws FeignException;
 
     @PostMapping("/check")
-    OrderDto checkProductQuantity(@RequestBody @Valid ShoppingCartDto shoppingCart) throws FeignException;
+    OrderDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) throws FeignException;
 
     @PostMapping("/add")
-    void addProductToWarehouse(@RequestBody @Valid AddProductToWarehouseRequestDto request) throws FeignException;
+    void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto request) throws FeignException;
 
     @GetMapping("/address")
     AddressResponseDto getWarehouseAddress() throws FeignException;

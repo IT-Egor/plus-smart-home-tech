@@ -3,12 +3,12 @@ package ru.yandex.practicum.plus_smart_home_tech.warehouse.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddProductToWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddressResponseDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.NewProductInWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.service.WarehouseService;
 
@@ -20,19 +20,25 @@ public class WarehouseController implements WarehouseFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public void newProductInWarehouse(@RequestBody @Valid NewProductInWarehouseRequestDto request) {
+    public void newProductInWarehouse(@Valid @RequestBody NewProductInWarehouseRequestDto request) {
         warehouseService.newProductInWarehouse(request);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public OrderDto checkProductQuantity(@RequestBody @Valid ShoppingCartDto shoppingCart) {
+    public void shipToDelivery(@Valid @RequestBody ShipToDeliveryRequestDto request) {
+        warehouseService.shipToDelivery(request);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public OrderDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) {
         return warehouseService.checkProductQuantity(shoppingCart);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public void addProductToWarehouse(@RequestBody @Valid AddProductToWarehouseRequestDto request) {
+    public void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto request) {
         warehouseService.addProductToWarehouse(request);
     }
 

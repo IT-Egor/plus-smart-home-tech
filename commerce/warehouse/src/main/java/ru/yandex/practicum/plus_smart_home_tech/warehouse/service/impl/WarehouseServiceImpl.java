@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddProductToWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AddressResponseDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.NewProductInWarehouseRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotEnoughProductsInWarehouseException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
+import ru.yandex.practicum.plus_smart_home_tech.warehouse.dao.OrderBookingRepository;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.dao.WarehouseRepository;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.mapper.WarehouseProductMapper;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.model.Dimension;
+import ru.yandex.practicum.plus_smart_home_tech.warehouse.model.OrderBooking;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.service.WarehouseService;
 
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final WarehouseProductMapper warehouseProductMapper;
+    private final OrderBookingRepository orderBookingRepository;
 
     private static final String[] ADDRESSES =
             new String[] {"ADDRESS_1", "ADDRESS_2"};
@@ -44,6 +44,13 @@ public class WarehouseServiceImpl implements WarehouseService {
             throw new AlreadyExistsException("Product `%s` already exists in warehouse".formatted(request.getProductId()));
         }
         warehouseRepository.save(warehouseProductMapper.newProductRequestToEntity(request));
+    }
+
+    @Override
+    public void shipToDelivery(ShipToDeliveryRequestDto request) {
+        OrderBooking orderBooking = findOrderBookingById(request.getOrderId());
+        orderBooking.setDeliveryId(request.getDeliveryId());
+        orderBookingRepository.save(orderBooking);
     }
 
     @Override
@@ -124,5 +131,10 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private double calculateVolume(Dimension dimension) {
         return dimension.getWidth() * dimension.getHeight() * dimension.getDepth();
+    }
+
+    private OrderBooking findOrderBookingById(UUID orderId) {
+        return orderBookingRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id `%s` not found".formatted(orderId)));
     }
 }
