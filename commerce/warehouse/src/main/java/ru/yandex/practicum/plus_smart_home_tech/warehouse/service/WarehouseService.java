@@ -13,9 +13,9 @@ public interface WarehouseService {
 
     void acceptReturn(Map<UUID, Long> returnedProducts);
 
-    OrderDto checkProductQuantity(ShoppingCartDto shoppingCart);
+    OrderDataDto checkProductQuantity(ShoppingCartDto shoppingCart);
 
-    OrderDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request);
+    OrderDataDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request);
 
     void addProductToWarehouse(AddProductToWarehouseRequestDto request);
 

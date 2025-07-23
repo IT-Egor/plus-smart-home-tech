@@ -27,10 +27,10 @@ public interface WarehouseFeign {
     void acceptReturn(@NotNull @NotEmpty @RequestBody Map<UUID, Long> returnedProducts) throws FeignException;
 
     @PostMapping("/check")
-    OrderDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) throws FeignException;
+    OrderDataDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) throws FeignException;
 
     @PostMapping("/assembly")
-    OrderDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) throws FeignException;
+    OrderDataDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) throws FeignException;
 
     @PostMapping("/add")
     void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto request) throws FeignException;

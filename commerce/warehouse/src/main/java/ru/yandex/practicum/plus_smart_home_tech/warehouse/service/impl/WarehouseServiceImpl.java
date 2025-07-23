@@ -59,7 +59,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public OrderDto checkProductQuantity(ShoppingCartDto shoppingCart) {
+    public OrderDataDto checkProductQuantity(ShoppingCartDto shoppingCart) {
         Set<UUID> productIds = shoppingCart.getProducts().keySet();
 
         Map<UUID, WarehouseProduct> products = warehouseRepository.findAllById(productIds)
@@ -72,12 +72,12 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public OrderDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
+    public OrderDataDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
         ShoppingCartDto shoppingCart = ShoppingCartDto.builder()
                 .shoppingCartId(request.getOrderId())
                 .products(request.getProducts())
                 .build();
-        OrderDto order = checkProductQuantity(shoppingCart);
+        OrderDataDto order = checkProductQuantity(shoppingCart);
 
         OrderBooking orderBooking = new OrderBooking();
         orderBooking.setOrderId(request.getOrderId());
@@ -120,7 +120,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .orElseThrow(() -> new NotFoundException("Product with id `%s` not found".formatted(productId)));
     }
 
-    private OrderDto createOrderDto(ShoppingCartDto shoppingCart, Map<UUID, WarehouseProduct> products) {
+    private OrderDataDto createOrderDto(ShoppingCartDto shoppingCart, Map<UUID, WarehouseProduct> products) {
         boolean hasFragile = false;
         double totalVolume = 0;
         double totalWeight = 0;
@@ -144,7 +144,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             totalWeight += product.getWeight() * requestedQuantity;
         }
 
-        return OrderDto.builder()
+        return OrderDataDto.builder()
                 .fragile(hasFragile)
                 .deliveryVolume(totalVolume)
                 .deliveryWeight(totalWeight)

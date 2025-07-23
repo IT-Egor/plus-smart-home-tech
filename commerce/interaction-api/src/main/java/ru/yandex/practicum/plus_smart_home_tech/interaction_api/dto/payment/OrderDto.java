@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderFullDataDto {
+public class OrderDto {
     @NotNull(message = "Order id is required")
     private UUID orderId;
 

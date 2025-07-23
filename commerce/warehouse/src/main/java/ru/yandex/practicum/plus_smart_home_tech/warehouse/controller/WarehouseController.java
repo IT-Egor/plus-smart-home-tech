@@ -43,12 +43,12 @@ public class WarehouseController implements WarehouseFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public OrderDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) {
+    public OrderDataDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) {
         return warehouseService.checkProductQuantity(shoppingCart);
     }
 
     @Override
-    public OrderDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) {
+    public OrderDataDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) {
         return warehouseService.assemblyProductsForOrder(request);
     }
 

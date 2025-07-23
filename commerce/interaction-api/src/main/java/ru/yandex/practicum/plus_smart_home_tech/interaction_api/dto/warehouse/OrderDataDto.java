@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto {
+public class OrderDataDto {
     @NotNull(message = "Delivery weight is required")
     private Double deliveryWeight;
 
