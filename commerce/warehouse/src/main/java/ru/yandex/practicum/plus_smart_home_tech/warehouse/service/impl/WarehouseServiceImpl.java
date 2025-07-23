@@ -54,6 +54,21 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    public void acceptReturn(Map<UUID, Long> returnedProducts) {
+        Map<UUID, WarehouseProduct> products = warehouseRepository.findAllById(returnedProducts.keySet()).stream()
+                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Long> entry : returnedProducts.entrySet()) {
+            if (products.containsKey(entry.getKey())) {
+                WarehouseProduct product = products.get(entry.getKey());
+                product.setQuantity(product.getQuantity() + entry.getValue());
+            }
+        }
+
+        warehouseRepository.saveAll(products.values());
+    }
+
+    @Override
     public OrderDto checkProductQuantity(ShoppingCartDto shoppingCart) {
         Set<UUID> productIds = shoppingCart.getProducts().keySet();
 

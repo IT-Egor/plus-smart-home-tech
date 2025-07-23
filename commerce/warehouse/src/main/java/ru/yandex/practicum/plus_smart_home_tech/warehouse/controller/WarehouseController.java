@@ -1,6 +1,8 @@
 package ru.yandex.practicum.plus_smart_home_tech.warehouse.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +13,9 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_car
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 import ru.yandex.practicum.plus_smart_home_tech.warehouse.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +33,12 @@ public class WarehouseController implements WarehouseFeign {
     @ResponseStatus(HttpStatus.OK)
     public void shipToDelivery(@Valid @RequestBody ShipToDeliveryRequestDto request) {
         warehouseService.shipToDelivery(request);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public void acceptReturn(@NotNull @NotEmpty @RequestBody Map<UUID, Long> returnedProducts) {
+        warehouseService.acceptReturn(returnedProducts);
     }
 
     @Override
