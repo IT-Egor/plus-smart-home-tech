@@ -23,4 +23,7 @@ public interface PaymentFeign {
 
     @PostMapping("/productCost")
     Double productCost(@Valid @RequestBody OrderDto orderDto) throws FeignException;
+
+    @PostMapping("/failed")
+    void paymentFailed(@RequestBody UUID paymentId) throws FeignException;
 }

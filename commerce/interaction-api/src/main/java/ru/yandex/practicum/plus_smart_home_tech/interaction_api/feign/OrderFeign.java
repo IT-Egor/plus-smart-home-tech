@@ -12,4 +12,7 @@ import java.util.UUID;
 public interface OrderFeign {
     @PostMapping("/payment")
     OrderDto payment(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/payment/failed")
+    OrderDto paymentFailed(@RequestBody UUID orderId) throws FeignException;
 }

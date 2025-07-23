@@ -81,6 +81,14 @@ public class PaymentServiceImpl implements PaymentService {
                 .sum();
     }
 
+    @Override
+    public void processFailedPayment(UUID paymentId) {
+        Payment payment = findPaymentById(paymentId);
+        orderFeign.paymentFailed(payment.getOrderId());
+        payment.setPaymentStatus(PaymentStatus.FAILED);
+        paymentRepository.save(payment);
+    }
+
     private Payment findPaymentById(UUID paymentId) {
         return paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new NotFoundException("Payment `%s` not found".formatted(paymentId)));

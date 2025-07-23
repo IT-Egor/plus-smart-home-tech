@@ -37,4 +37,9 @@ public class PaymentController implements PaymentFeign {
     public Double productCost(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.calculateProductsCost(orderDto);
     }
+
+    @Override
+    public void paymentFailed(@RequestBody UUID paymentId) {
+        paymentService.processFailedPayment(paymentId);
+    }
 }

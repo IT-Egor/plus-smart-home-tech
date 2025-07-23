@@ -13,4 +13,6 @@ public interface PaymentService {
     void processSuccessPayment(UUID paymentId);
 
     Double calculateProductsCost(OrderDto orderDto);
+
+    void processFailedPayment(UUID paymentId);
 }
