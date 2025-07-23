@@ -55,17 +55,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public void acceptReturn(Map<UUID, Long> returnedProducts) {
-        Map<UUID, WarehouseProduct> products = warehouseRepository.findAllById(returnedProducts.keySet()).stream()
-                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
-
-        for (Map.Entry<UUID, Long> entry : returnedProducts.entrySet()) {
-            if (products.containsKey(entry.getKey())) {
-                WarehouseProduct product = products.get(entry.getKey());
-                product.setQuantity(product.getQuantity() + entry.getValue());
-            }
-        }
-
-        warehouseRepository.saveAll(products.values());
+        increaseProductQuantity(returnedProducts);
     }
 
     @Override
@@ -79,6 +69,23 @@ public class WarehouseServiceImpl implements WarehouseService {
         checkProductsAvailability(productIds, products);
 
         return createOrderDto(shoppingCart, products);
+    }
+
+    @Override
+    public OrderDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
+        ShoppingCartDto shoppingCart = ShoppingCartDto.builder()
+                .shoppingCartId(request.getOrderId())
+                .products(request.getProducts())
+                .build();
+        OrderDto order = checkProductQuantity(shoppingCart);
+
+        OrderBooking orderBooking = new OrderBooking();
+        orderBooking.setOrderId(request.getOrderId());
+        orderBooking.setProducts(request.getProducts());
+        orderBookingRepository.save(orderBooking);
+
+        decreaseProductQuantity(request.getProducts());
+        return order;
     }
 
     @Override
@@ -151,5 +158,35 @@ public class WarehouseServiceImpl implements WarehouseService {
     private OrderBooking findOrderBookingById(UUID orderId) {
         return orderBookingRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order with id `%s` not found".formatted(orderId)));
+    }
+
+    private void increaseProductQuantity(Map<UUID, Long> returnedProducts) {
+        Map<UUID, WarehouseProduct> products = warehouseRepository.findAllById(returnedProducts.keySet()).stream()
+                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Long> entry : returnedProducts.entrySet()) {
+            if (products.containsKey(entry.getKey())) {
+                WarehouseProduct product = products.get(entry.getKey());
+                product.setQuantity(product.getQuantity() + entry.getValue());
+            }
+        }
+        warehouseRepository.saveAll(products.values());
+    }
+
+    private void decreaseProductQuantity(Map<UUID, Long> orderedProducts) {
+        Map<UUID, WarehouseProduct> products = warehouseRepository.findAllById(orderedProducts.keySet()).stream()
+                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Long> entry : orderedProducts.entrySet()) {
+            if (products.containsKey(entry.getKey())) {
+                WarehouseProduct product = products.get(entry.getKey());
+                if (product.getQuantity() < entry.getValue()) {
+                    throw new NotEnoughProductsInWarehouseException(
+                            "Product `%s` quantity is not enough".formatted(product.getProductId()));
+                }
+                product.setQuantity(product.getQuantity() - entry.getValue());
+            }
+        }
+        warehouseRepository.saveAll(products.values());
     }
 }

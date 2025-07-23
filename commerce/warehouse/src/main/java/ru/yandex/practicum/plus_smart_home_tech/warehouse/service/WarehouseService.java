@@ -15,6 +15,8 @@ public interface WarehouseService {
 
     OrderDto checkProductQuantity(ShoppingCartDto shoppingCart);
 
+    OrderDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request);
+
     void addProductToWarehouse(AddProductToWarehouseRequestDto request);
 
     AddressResponseDto getWarehouseAddress();

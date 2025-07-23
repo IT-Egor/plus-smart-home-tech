@@ -29,6 +29,9 @@ public interface WarehouseFeign {
     @PostMapping("/check")
     OrderDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCart) throws FeignException;
 
+    @PostMapping("/assembly")
+    OrderDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) throws FeignException;
+
     @PostMapping("/add")
     void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto request) throws FeignException;
 
