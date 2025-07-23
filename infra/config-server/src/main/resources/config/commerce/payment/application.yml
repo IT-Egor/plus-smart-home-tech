@@ -22,6 +22,10 @@ spring:
     username: payment
     password: payment
 
+app:
+  payment:
+    vat-rate: 0.1
+
 resilience4j:
   circuitbreaker:
     configs:

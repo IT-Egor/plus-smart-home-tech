@@ -26,8 +26,8 @@ public class Payment {
     @Column(name = "delivery_total")
     private Double deliveryTotal;
 
-    @Column(name = "fee_total")
-    private Double feeTotal;
+    @Column(name = "vat_total")
+    private Double vatTotal;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
