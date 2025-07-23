@@ -6,15 +6,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentStatus;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.BadRequestException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.OrderFeign;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.StoreFeign;
 import ru.yandex.practicum.plus_smart_home_tech.payment.dao.PaymentRepository;
 import ru.yandex.practicum.plus_smart_home_tech.payment.mapper.PaymentMapper;
 import ru.yandex.practicum.plus_smart_home_tech.payment.model.Payment;
 import ru.yandex.practicum.plus_smart_home_tech.payment.service.PaymentService;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,15 +27,18 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final double vatRate;
     private final OrderFeign orderFeign;
+    private final StoreFeign storeFeign;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               PaymentMapper paymentMapper,
                               @Value("${app.payment.vat-rate}") double vatRate,
-                              OrderFeign orderFeign) {
+                              OrderFeign orderFeign,
+                              StoreFeign storeFeign) {
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.vatRate = vatRate;
         this.orderFeign = orderFeign;
+        this.storeFeign = storeFeign;
     }
 
     @Override
@@ -58,6 +65,20 @@ public class PaymentServiceImpl implements PaymentService {
         orderFeign.payment(payment.getOrderId());
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
         paymentRepository.save(payment);
+    }
+
+    @Override
+    public Double calculateProductsCost(OrderDto orderDto) {
+        Map<UUID, Long> productQuantities = orderDto.getProducts();
+
+        Map<UUID, Double> productPrices = productQuantities.keySet().stream()
+                .map(storeFeign::getProduct)
+                .collect(Collectors.toMap(ProductDto::getProductId, ProductDto::getPrice));
+
+        return productQuantities.entrySet().stream()
+                .map(entry -> entry.getValue() * productPrices.get(entry.getKey()))
+                .mapToDouble(Double::doubleValue)
+                .sum();
     }
 
     private Payment findPaymentById(UUID paymentId) {

@@ -20,4 +20,7 @@ public interface PaymentFeign {
 
     @PostMapping("/refund")
     void paymentSuccess(@RequestBody UUID paymentId) throws FeignException;
+
+    @PostMapping("/productCost")
+    Double productCost(@Valid @RequestBody OrderDto orderDto) throws FeignException;
 }

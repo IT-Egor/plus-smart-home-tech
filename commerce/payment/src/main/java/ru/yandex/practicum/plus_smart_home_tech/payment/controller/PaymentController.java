@@ -32,4 +32,9 @@ public class PaymentController implements PaymentFeign {
     public void paymentSuccess(@RequestBody UUID paymentId) {
         paymentService.processSuccessPayment(paymentId);
     }
+
+    @Override
+    public Double productCost(@Valid @RequestBody OrderDto orderDto) {
+        return paymentService.calculateProductsCost(orderDto);
+    }
 }
