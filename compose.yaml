@@ -89,6 +89,24 @@ services:
       start_period: 10s
       retries: 5
 
+  payment-db:
+    image: postgres:16.1
+    container_name: payment-db
+    ports:
+      - "5438:5432"
+    volumes:
+      - ./volumes/postgres/payment-db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: payment
+      POSTGRES_USER: payment
+      POSTGRES_PASSWORD: payment
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
   kafka:
     image: confluentinc/confluent-local:7.4.3
     hostname: kafka
