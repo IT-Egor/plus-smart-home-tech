@@ -2,8 +2,10 @@ package ru.yandex.practicum.plus_smart_home_tech.payment.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
@@ -19,26 +21,31 @@ public class PaymentController implements PaymentFeign {
     private final PaymentService paymentService;
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public PaymentResponseDto addPayment(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.addPayment(orderDto);
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public Double getTotalCost(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.getTotalCost(orderDto);
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public void paymentSuccess(@RequestBody UUID paymentId) {
         paymentService.processSuccessPayment(paymentId);
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public Double productCost(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.calculateProductsCost(orderDto);
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public void paymentFailed(@RequestBody UUID paymentId) {
         paymentService.processFailedPayment(paymentId);
     }

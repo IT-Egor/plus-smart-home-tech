@@ -9,8 +9,10 @@ import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Delivery;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.service.DeliveryService;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.ShipToDeliveryRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.OrderFeign;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 
 import java.util.UUID;
 
@@ -21,6 +23,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
     private final OrderFeign orderFeign;
+    private final WarehouseFeign warehouseFeign;
 
     @Override
     public DeliveryDto planDelivery(DeliveryDto deliveryDto) {
@@ -34,6 +37,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = findDeliveryByOrderId(orderId);
         orderFeign.complete(delivery.getOrderId());
         delivery.setDeliveryState(DeliveryState.DELIVERED);
+        deliveryRepository.save(delivery);
+    }
+
+    @Override
+    public void setPicked(UUID orderId) {
+        Delivery delivery = findDeliveryByOrderId(orderId);
+        delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
+        ShipToDeliveryRequestDto request = new ShipToDeliveryRequestDto(orderId, delivery.getDeliveryId());
+        warehouseFeign.shipToDelivery(request);
+        orderFeign.assembly(delivery.getOrderId());
         deliveryRepository.save(delivery);
     }
 

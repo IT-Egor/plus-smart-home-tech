@@ -17,4 +17,7 @@ public interface DeliveryFeign {
 
     @PostMapping("/successful")
     void deliverySuccessful(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/picked")
+    void deliveryPicked(@RequestBody UUID orderId) throws FeignException;
 }

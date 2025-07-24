@@ -9,4 +9,6 @@ public interface DeliveryService {
     DeliveryDto planDelivery(@Valid DeliveryDto deliveryDto);
 
     void setSuccessful(UUID orderId);
+
+    void setPicked(UUID orderId);
 }
