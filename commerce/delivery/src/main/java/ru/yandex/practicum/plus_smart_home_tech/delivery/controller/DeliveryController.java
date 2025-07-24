@@ -36,4 +36,10 @@ public class DeliveryController implements DeliveryFeign {
     public void deliveryPicked(@RequestBody UUID orderId) {
         deliveryService.setPicked(orderId);
     }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public void deliveryFailed(@RequestBody UUID orderId) {
+        deliveryService.setFailed(orderId);
+    }
 }

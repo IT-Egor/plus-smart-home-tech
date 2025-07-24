@@ -20,4 +20,7 @@ public interface DeliveryFeign {
 
     @PostMapping("/picked")
     void deliveryPicked(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/failed")
+    void deliveryFailed(@RequestBody UUID orderId) throws FeignException;
 }

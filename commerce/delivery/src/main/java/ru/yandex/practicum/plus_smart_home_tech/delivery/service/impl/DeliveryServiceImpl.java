@@ -50,6 +50,14 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryRepository.save(delivery);
     }
 
+    @Override
+    public void setFailed(UUID orderId) {
+        Delivery delivery = findDeliveryByOrderId(orderId);
+        orderFeign.complete(delivery.getOrderId());
+        delivery.setDeliveryState(DeliveryState.FAILED);
+        deliveryRepository.save(delivery);
+    }
+
     private Delivery findDeliveryByOrderId(UUID orderId) {
         return deliveryRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Delivery for order `%s` not found".formatted(orderId)));

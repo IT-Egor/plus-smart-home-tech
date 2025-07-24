@@ -11,4 +11,6 @@ public interface DeliveryService {
     void setSuccessful(UUID orderId);
 
     void setPicked(UUID orderId);
+
+    void setFailed(UUID orderId);
 }
