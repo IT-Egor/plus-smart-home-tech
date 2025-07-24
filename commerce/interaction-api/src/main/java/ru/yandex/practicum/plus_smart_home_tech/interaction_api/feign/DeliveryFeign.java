@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 
 import java.util.UUID;
 
@@ -23,4 +24,7 @@ public interface DeliveryFeign {
 
     @PostMapping("/failed")
     void deliveryFailed(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/cost")
+    Double deliveryCost(@Valid @RequestBody OrderDto orderDto) throws FeignException;
 }

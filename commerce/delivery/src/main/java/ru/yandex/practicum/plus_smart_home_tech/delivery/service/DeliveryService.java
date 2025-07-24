@@ -2,6 +2,7 @@ package ru.yandex.practicum.plus_smart_home_tech.delivery.service;
 
 import jakarta.validation.Valid;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface DeliveryService {
     void setPicked(UUID orderId);
 
     void setFailed(UUID orderId);
+
+    Double calculateDeliveryCost(OrderDto orderDto);
 }

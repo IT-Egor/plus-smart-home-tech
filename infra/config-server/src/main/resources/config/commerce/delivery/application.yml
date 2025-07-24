@@ -22,6 +22,17 @@ spring:
     username: delivery
     password: delivery
 
+app:
+  delivery:
+    rates:
+      base: 5.0
+      address1: 1
+      address2: 2
+      fragile: 0.2
+      weight: 0.3
+      volume: 0.2
+      street: 0.2
+
 resilience4j:
   circuitbreaker:
     configs:

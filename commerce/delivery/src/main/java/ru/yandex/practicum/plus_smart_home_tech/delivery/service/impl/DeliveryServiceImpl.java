@@ -3,12 +3,15 @@ package ru.yandex.practicum.plus_smart_home_tech.delivery.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.plus_smart_home_tech.delivery.config.DeliveryCostRates;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.dao.DeliveryRepository;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.mapper.DeliveryMapper;
+import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Address;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Delivery;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.service.DeliveryService;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.ShipToDeliveryRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.OrderFeign;
@@ -24,6 +27,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryMapper deliveryMapper;
     private final OrderFeign orderFeign;
     private final WarehouseFeign warehouseFeign;
+    private final DeliveryCostRates deliveryCostRates;
 
     @Override
     public DeliveryDto planDelivery(DeliveryDto deliveryDto) {
@@ -58,8 +62,34 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryRepository.save(delivery);
     }
 
+    @Override
+    public Double calculateDeliveryCost(OrderDto orderDto) {
+        Delivery delivery = findDeliveryById(orderDto.getDeliveryId());
+        Address fromAddress = delivery.getFromAddress();
+        Address toAddress = delivery.getToAddress();
+
+        double totalCost = deliveryCostRates.getBase();
+
+        totalCost += fromAddress.getCity().equals("ADDRESS_1")
+                ? totalCost * deliveryCostRates.getAddress1() : totalCost * deliveryCostRates.getAddress2();
+
+        totalCost += orderDto.isFragile() ? totalCost * deliveryCostRates.getFragile() : 0;
+        totalCost += orderDto.getDeliveryWeight() * deliveryCostRates.getWeight();
+        totalCost += orderDto.getDeliveryVolume() * deliveryCostRates.getVolume();
+
+        totalCost += fromAddress.getStreet().equals(toAddress.getStreet())
+                ? 0 : totalCost * deliveryCostRates.getStreet();
+
+        return totalCost;
+    }
+
     private Delivery findDeliveryByOrderId(UUID orderId) {
         return deliveryRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Delivery for order `%s` not found".formatted(orderId)));
+    }
+
+    private Delivery findDeliveryById(UUID deliveryId) {
+        return deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new NotFoundException("Delivery `%s` not found".formatted(deliveryId)));
     }
 }
