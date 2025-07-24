@@ -15,4 +15,7 @@ public interface OrderFeign {
 
     @PostMapping("/payment/failed")
     OrderDto paymentFailed(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/completed")
+    OrderDto complete(@RequestBody UUID orderId) throws FeignException;
 }
