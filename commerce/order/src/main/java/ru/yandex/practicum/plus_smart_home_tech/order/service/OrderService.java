@@ -21,4 +21,6 @@ public interface OrderService {
     OrderDto setDeliverySuccess(UUID orderId);
 
     OrderDto setDeliveryFailed(UUID orderId);
+
+    OrderDto setOrderComplete(UUID orderId);
 }

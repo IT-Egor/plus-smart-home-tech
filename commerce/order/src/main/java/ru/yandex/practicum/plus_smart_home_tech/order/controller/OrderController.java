@@ -64,7 +64,7 @@ public class OrderController implements OrderFeign {
     @Override
     @ResponseStatus(HttpStatus.OK)
     public OrderDto complete(@RequestBody UUID orderId) {
-        return null;
+        return orderService.setOrderComplete(orderId);
     }
 
     @Override
