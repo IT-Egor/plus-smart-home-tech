@@ -10,6 +10,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderD
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.ReturnProductRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDataDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.order.OrderState;
@@ -125,6 +126,20 @@ public class OrderServiceImpl implements OrderService {
         Order order = findOrderById(orderId);
         order.setDeliveryPrice(deliveryFeign.deliveryCost(orderMapper.toDto(order)));
         return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    @Override
+    public OrderDto assembleOrder(UUID orderId) {
+        Order order = findOrderById(orderId);
+
+        AssemblyProductsForOrderRequest request = AssemblyProductsForOrderRequest.builder()
+                .orderId(order.getOrderId())
+                .products(order.getProducts())
+                .build();
+        warehouseFeign.assemblyProductsForOrder(request);
+
+        order.setState(OrderState.ASSEMBLED);
+        return orderMapper.toDto(order);
     }
 
     private void checkUserAuthorization(String username) {
