@@ -15,4 +15,6 @@ public interface OrderService {
     OrderDto returnProduct(ReturnProductRequestDto request);
 
     OrderDto payForOrder(UUID orderId);
+
+    OrderDto setFailedPayment(UUID orderId);
 }
