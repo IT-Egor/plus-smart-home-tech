@@ -8,6 +8,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.Del
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.CreateOrderRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.ReturnProductRequestDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDataDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.order.Orde
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.DeliveryFeign;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.PaymentFeign;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.ShoppingCartFeign;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 import ru.yandex.practicum.plus_smart_home_tech.order.dao.OrderRepository;
@@ -34,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartFeign shoppingCartFeign;
     private final WarehouseFeign warehouseFeign;
     private final DeliveryFeign deliveryFeign;
+    private final PaymentFeign paymentFeign;
 
     @Override
     public List<OrderDto> getClientOrders(String username) {
@@ -68,6 +71,15 @@ public class OrderServiceImpl implements OrderService {
         Order order = findOrderById(request.getOrderId());
         warehouseFeign.acceptReturn(request.getProducts());
         order.setState(OrderState.PRODUCT_RETURNED);
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    @Override
+    public OrderDto payForOrder(UUID orderId) {
+        Order order = findOrderById(orderId);
+        PaymentResponseDto payment = paymentFeign.addPayment(orderMapper.toDto(order));
+        order.setPaymentId(payment.getPaymentId());
+        order.setState(OrderState.ON_PAYMENT);
         return orderMapper.toDto(orderRepository.save(order));
     }
 

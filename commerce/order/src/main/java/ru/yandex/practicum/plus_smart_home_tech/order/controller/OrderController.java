@@ -38,7 +38,7 @@ public class OrderController implements OrderFeign {
     @Override
     @ResponseStatus(HttpStatus.OK)
     public OrderDto payment(@RequestBody UUID orderId) {
-        return null;
+        return orderService.payForOrder(orderId);
     }
 
     @Override

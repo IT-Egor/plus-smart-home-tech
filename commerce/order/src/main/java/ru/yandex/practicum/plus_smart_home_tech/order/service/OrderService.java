@@ -5,6 +5,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderD
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.ReturnProductRequestDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
     List<OrderDto> getClientOrders(String username);
@@ -12,4 +13,6 @@ public interface OrderService {
     OrderDto createNewOrder(CreateOrderRequestDto request);
 
     OrderDto returnProduct(ReturnProductRequestDto request);
+
+    OrderDto payForOrder(UUID orderId);
 }
