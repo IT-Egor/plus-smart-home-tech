@@ -26,11 +26,13 @@ public class OrderController implements OrderFeign {
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public OrderDto createNewOrder(@Valid @RequestBody CreateOrderRequestDto request) {
         return orderService.createNewOrder(request);
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     public OrderDto productReturn(@Valid @RequestBody ReturnProductRequestDto request) {
         return orderService.returnProduct(request);
     }
@@ -45,6 +47,12 @@ public class OrderController implements OrderFeign {
     @ResponseStatus(HttpStatus.OK)
     public OrderDto paymentFailed(@RequestBody UUID orderId) {
         return orderService.setFailedPayment(orderId);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public OrderDto delivery(@RequestBody UUID orderId) {
+        return orderService.setDeliverySuccess(orderId);
     }
 
     @Override
