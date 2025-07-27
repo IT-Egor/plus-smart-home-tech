@@ -45,4 +45,7 @@ public interface OrderFeign {
 
     @PostMapping("/assembly")
     OrderDto assembly(@RequestBody UUID orderId) throws FeignException;
+
+    @PostMapping("/assembly/failed")
+    OrderDto assemblyFailed(@RequestBody UUID orderId) throws FeignException;
 }
