@@ -40,6 +40,9 @@ public interface OrderFeign {
     @PostMapping("/calculate/total")
     OrderDto calculateTotalCost(@RequestBody UUID orderId) throws FeignException;
 
+    @PostMapping("/calculate/delivery")
+    OrderDto calculateDeliveryCost(@RequestBody UUID orderId) throws FeignException;
+
     @PostMapping("/assembly")
     OrderDto assembly(@RequestBody UUID orderId) throws FeignException;
 }

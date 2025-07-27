@@ -120,6 +120,13 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toDto(orderRepository.save(order));
     }
 
+    @Override
+    public OrderDto calculateDeliveryCost(UUID orderId) {
+        Order order = findOrderById(orderId);
+        order.setDeliveryPrice(deliveryFeign.deliveryCost(orderMapper.toDto(order)));
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
     private void checkUserAuthorization(String username) {
         if (username.isBlank()) {
             throw new UnauthorizedException("Username must not be blank");

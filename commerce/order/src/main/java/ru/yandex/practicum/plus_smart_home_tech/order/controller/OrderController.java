@@ -1,6 +1,5 @@
 package ru.yandex.practicum.plus_smart_home_tech.order.controller;
 
-import feign.FeignException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -72,6 +71,12 @@ public class OrderController implements OrderFeign {
     @ResponseStatus(HttpStatus.OK)
     public OrderDto calculateTotalCost(@RequestBody UUID orderId) {
         return orderService.calculateTotalCost(orderId);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public OrderDto calculateDeliveryCost(@RequestBody UUID orderId) {
+        return orderService.calculateDeliveryCost(orderId);
     }
 
     @Override
