@@ -6,6 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.CreateOrderRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.ReturnProductRequestDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,9 @@ public interface OrderFeign {
 
     @PutMapping
     OrderDto createNewOrder(@Valid @RequestBody CreateOrderRequestDto request) throws FeignException;
+
+    @PostMapping("/return")
+    OrderDto productReturn(@Valid @RequestBody ReturnProductRequestDto request) throws FeignException;
 
     @PostMapping("/payment")
     OrderDto payment(@RequestBody UUID orderId) throws FeignException;
