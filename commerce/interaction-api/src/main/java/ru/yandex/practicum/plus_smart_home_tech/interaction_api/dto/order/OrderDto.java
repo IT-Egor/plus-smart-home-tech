@@ -1,4 +1,4 @@
-package ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment;
+package ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

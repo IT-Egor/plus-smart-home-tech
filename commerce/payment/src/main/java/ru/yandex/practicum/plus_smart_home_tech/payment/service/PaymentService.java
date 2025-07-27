@@ -1,6 +1,6 @@
 package ru.yandex.practicum.plus_smart_home_tech.payment.service;
 
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 
 import java.util.UUID;

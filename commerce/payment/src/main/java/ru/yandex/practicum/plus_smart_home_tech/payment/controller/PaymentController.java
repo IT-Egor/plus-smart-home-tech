@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.PaymentFeign;
 import ru.yandex.practicum.plus_smart_home_tech.payment.service.PaymentService;

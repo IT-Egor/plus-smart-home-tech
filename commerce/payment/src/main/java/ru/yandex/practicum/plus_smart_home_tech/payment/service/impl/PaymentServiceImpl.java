@@ -3,7 +3,7 @@ package ru.yandex.practicum.plus_smart_home_tech.payment.service.impl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.payment.PaymentStatus;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;

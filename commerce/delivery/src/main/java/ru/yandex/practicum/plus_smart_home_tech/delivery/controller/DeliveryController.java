@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.service.DeliveryService;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.DeliveryFeign;
 
 import java.util.UUID;

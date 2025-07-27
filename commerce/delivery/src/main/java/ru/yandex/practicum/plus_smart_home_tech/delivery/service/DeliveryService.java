@@ -2,7 +2,7 @@ package ru.yandex.practicum.plus_smart_home_tech.delivery.service;
 
 import jakarta.validation.Valid;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 
 import java.util.UUID;
 
