@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.AddressDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
@@ -60,7 +61,7 @@ public class WarehouseController implements WarehouseFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public AddressResponseDto getWarehouseAddress() {
+    public AddressDto getWarehouseAddress() {
         return warehouseService.getWarehouseAddress();
     }
 }

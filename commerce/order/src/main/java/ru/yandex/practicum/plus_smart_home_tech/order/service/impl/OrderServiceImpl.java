@@ -3,12 +3,20 @@ package ru.yandex.practicum.plus_smart_home_tech.order.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.AddressDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.CreateOrderRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.OrderDataDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.UnauthorizedException;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.DeliveryFeign;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.ShoppingCartFeign;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 import ru.yandex.practicum.plus_smart_home_tech.order.dao.OrderRepository;
 import ru.yandex.practicum.plus_smart_home_tech.order.mapper.OrderMapper;
+import ru.yandex.practicum.plus_smart_home_tech.order.model.Order;
 import ru.yandex.practicum.plus_smart_home_tech.order.service.OrderService;
 
 import java.util.List;
@@ -20,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ShoppingCartFeign shoppingCartFeign;
+    private final WarehouseFeign warehouseFeign;
+    private final DeliveryFeign deliveryFeign;
 
     @Override
     public List<OrderDto> getClientOrders(String username) {
@@ -28,6 +38,25 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByShoppingCartId(shoppingCartDto.getShoppingCartId()).stream()
                 .map(orderMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public OrderDto createNewOrder(CreateOrderRequestDto request) {
+        OrderDataDto orderDataDto = warehouseFeign.checkProductQuantity(request.getShoppingCart());
+        Order order = orderMapper.createRequestToOrder(request, orderDataDto);
+        order = orderRepository.save(order);
+
+        AddressDto warehouseAddress = warehouseFeign.getWarehouseAddress();
+        DeliveryDto newDelivery = DeliveryDto.builder()
+                .fromAddress(warehouseAddress)
+                .toAddress(request.getDeliveryAddress())
+                .orderId(order.getOrderId())
+                .deliveryState(DeliveryState.CREATED)
+                .build();
+        newDelivery = deliveryFeign.planDelivery(newDelivery);
+        order.setDeliveryId(newDelivery.getDeliveryId());
+
+        return orderMapper.toDto(orderRepository.save(order));
     }
 
     private void checkUserAuthorization(String username) {

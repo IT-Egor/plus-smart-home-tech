@@ -1,8 +1,10 @@
 package ru.yandex.practicum.plus_smart_home_tech.order.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.CreateOrderRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.OrderFeign;
 import ru.yandex.practicum.plus_smart_home_tech.order.service.OrderService;
@@ -20,6 +22,11 @@ public class OrderController implements OrderFeign {
     @ResponseStatus(HttpStatus.OK)
     public List<OrderDto> getClientOrders(@RequestParam String username) {
         return orderService.getClientOrders(username);
+    }
+
+    @Override
+    public OrderDto createNewOrder(@Valid @RequestBody CreateOrderRequestDto request) {
+        return orderService.createNewOrder(request);
     }
 
     @Override

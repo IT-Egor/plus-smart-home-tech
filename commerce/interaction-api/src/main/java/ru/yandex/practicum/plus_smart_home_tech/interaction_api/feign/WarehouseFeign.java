@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.AddressDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 
@@ -36,5 +37,5 @@ public interface WarehouseFeign {
     void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequestDto request) throws FeignException;
 
     @GetMapping("/address")
-    AddressResponseDto getWarehouseAddress() throws FeignException;
+    AddressDto getWarehouseAddress() throws FeignException;
 }

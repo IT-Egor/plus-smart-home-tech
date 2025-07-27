@@ -3,6 +3,7 @@ package ru.yandex.practicum.plus_smart_home_tech.warehouse.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.AddressDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.shopping_cart.ShoppingCartDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.AlreadyExistsException;
@@ -96,9 +97,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public AddressResponseDto getWarehouseAddress() {
+    public AddressDto getWarehouseAddress() {
         String address = CURRENT_ADDRESS;
-        return AddressResponseDto.builder()
+        return AddressDto.builder()
                 .country(address)
                 .city(address)
                 .street(address)
