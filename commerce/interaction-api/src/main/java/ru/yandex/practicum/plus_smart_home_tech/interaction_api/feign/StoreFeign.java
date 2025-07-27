@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.ProductDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.SetProductQuantityStateRequestDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductCategory;
 
 import java.util.UUID;
 

@@ -3,7 +3,7 @@ package ru.yandex.practicum.plus_smart_home_tech.payment.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentStatus;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.payment.PaymentStatus;
 
 import java.util.UUID;
 

@@ -3,7 +3,7 @@ package ru.yandex.practicum.plus_smart_home_tech.delivery.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 
 import java.util.UUID;
 

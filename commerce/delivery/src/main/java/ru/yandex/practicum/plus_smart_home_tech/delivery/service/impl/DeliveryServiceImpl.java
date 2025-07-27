@@ -10,7 +10,7 @@ import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Address;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Delivery;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.service.DeliveryService;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.ShipToDeliveryRequestDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;

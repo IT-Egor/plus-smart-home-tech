@@ -7,9 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.QuantityState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.QuantityState;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery;
+package ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery;
 
 public enum DeliveryState {
     CREATED,
