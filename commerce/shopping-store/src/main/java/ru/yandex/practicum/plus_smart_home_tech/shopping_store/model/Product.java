@@ -6,6 +6,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.Prod
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.QuantityState;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -40,5 +41,5 @@ public class Product {
     private ProductCategory productCategory;
 
     @Column(name = "price")
-    private Double price;
+    private BigDecimal price;
 }

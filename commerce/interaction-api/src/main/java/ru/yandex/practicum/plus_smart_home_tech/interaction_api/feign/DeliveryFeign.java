@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @FeignClient(name = "delivery", path = "/api/v1/delivery")
@@ -26,5 +27,5 @@ public interface DeliveryFeign {
     void deliveryFailed(@RequestBody UUID orderId) throws FeignException;
 
     @PostMapping("/cost")
-    Double deliveryCost(@Valid @RequestBody OrderDto orderDto) throws FeignException;
+    BigDecimal deliveryCost(@Valid @RequestBody OrderDto orderDto) throws FeignException;
 }

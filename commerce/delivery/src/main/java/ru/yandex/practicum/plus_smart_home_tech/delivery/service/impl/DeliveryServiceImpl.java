@@ -10,13 +10,14 @@ import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Address;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.model.Delivery;
 import ru.yandex.practicum.plus_smart_home_tech.delivery.service.DeliveryService;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.warehouse.ShipToDeliveryRequestDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.delivery.DeliveryState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.exception.NotFoundException;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.OrderFeign;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.WarehouseFeign;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -63,22 +64,32 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Double calculateDeliveryCost(OrderDto orderDto) {
+    public BigDecimal calculateDeliveryCost(OrderDto orderDto) {
         Delivery delivery = findDeliveryById(orderDto.getDeliveryId());
         Address fromAddress = delivery.getFromAddress();
         Address toAddress = delivery.getToAddress();
 
-        double totalCost = deliveryCostRates.getBase();
+        BigDecimal totalCost = deliveryCostRates.getBase();
 
-        totalCost += fromAddress.getCity().equals("ADDRESS_1")
-                ? totalCost * deliveryCostRates.getAddress1() : totalCost * deliveryCostRates.getAddress2();
+        BigDecimal cityMultiplier = fromAddress.getCity().equals("ADDRESS_1")
+                ? deliveryCostRates.getAddress1()
+                : deliveryCostRates.getAddress2();
+        totalCost = totalCost.add(totalCost.multiply(cityMultiplier));
 
-        totalCost += orderDto.isFragile() ? totalCost * deliveryCostRates.getFragile() : 0;
-        totalCost += orderDto.getDeliveryWeight() * deliveryCostRates.getWeight();
-        totalCost += orderDto.getDeliveryVolume() * deliveryCostRates.getVolume();
+        if (orderDto.isFragile()) {
+            totalCost = totalCost.add(totalCost.multiply(deliveryCostRates.getFragile()));
+        }
 
-        totalCost += fromAddress.getStreet().equals(toAddress.getStreet())
-                ? 0 : totalCost * deliveryCostRates.getStreet();
+        totalCost = totalCost.add(
+                BigDecimal.valueOf(orderDto.getDeliveryWeight()).multiply(deliveryCostRates.getWeight())
+        );
+        totalCost = totalCost.add(
+                BigDecimal.valueOf(orderDto.getDeliveryVolume()).multiply(deliveryCostRates.getVolume())
+        );
+
+        if (!fromAddress.getStreet().equals(toAddress.getStreet())) {
+            totalCost = totalCost.add(totalCost.multiply(deliveryCostRates.getStreet()));
+        }
 
         return totalCost;
     }

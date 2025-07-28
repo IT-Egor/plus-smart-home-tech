@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.order.OrderState;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,11 +49,11 @@ public class Order {
     private boolean fragile;
 
     @Column(name = "total_price")
-    private Double totalPrice;
+    private BigDecimal totalPrice;
 
     @Column(name = "delivery_price")
-    private Double deliveryPrice;
+    private BigDecimal deliveryPrice;
 
     @Column(name = "product_price")
-    private Double productPrice;
+    private BigDecimal productPrice;
 }

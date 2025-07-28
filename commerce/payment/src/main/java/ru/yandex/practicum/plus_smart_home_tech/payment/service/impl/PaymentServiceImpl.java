@@ -16,6 +16,7 @@ import ru.yandex.practicum.plus_smart_home_tech.payment.mapper.PaymentMapper;
 import ru.yandex.practicum.plus_smart_home_tech.payment.model.Payment;
 import ru.yandex.practicum.plus_smart_home_tech.payment.service.PaymentService;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,13 +26,13 @@ import java.util.stream.Collectors;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
-    private final double vatRate;
+    private final BigDecimal vatRate;
     private final OrderFeign orderFeign;
     private final StoreFeign storeFeign;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               PaymentMapper paymentMapper,
-                              @Value("${app.payment.vat-rate}") double vatRate,
+                              @Value("${app.payment.vat-rate}") BigDecimal vatRate,
                               OrderFeign orderFeign,
                               StoreFeign storeFeign) {
         this.paymentRepository = paymentRepository;
@@ -48,15 +49,21 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrderId(orderDto.getOrderId());
         payment.setTotalPayment(getTotalCost(orderDto));
         payment.setDeliveryTotal(orderDto.getDeliveryPrice());
-        payment.setVatTotal(orderDto.getTotalPrice() * vatRate);
+        payment.setVatTotal(orderDto.getTotalPrice().multiply(vatRate));
         payment.setPaymentStatus(PaymentStatus.PENDING);
 
         return paymentMapper.toResponseDto(paymentRepository.save(payment));
     }
 
     @Override
-    public Double getTotalCost(OrderDto orderDto) {
-        return orderDto.getProductPrice() + orderDto.getDeliveryPrice() + orderDto.getProductPrice() * vatRate;
+    public BigDecimal getTotalCost(OrderDto orderDto) {
+        BigDecimal productPrice = orderDto.getProductPrice();
+        BigDecimal deliveryPrice = orderDto.getDeliveryPrice();
+        BigDecimal vat = productPrice.multiply(vatRate);
+
+        return productPrice
+                .add(deliveryPrice)
+                .add(vat);
     }
 
     @Override
@@ -68,17 +75,20 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Double calculateProductsCost(OrderDto orderDto) {
+    public BigDecimal calculateProductsCost(OrderDto orderDto) {
         Map<UUID, Long> productQuantities = orderDto.getProducts();
 
-        Map<UUID, Double> productPrices = productQuantities.keySet().stream()
+        Map<UUID, BigDecimal> productPrices = productQuantities.keySet().stream()
                 .map(storeFeign::getProduct)
                 .collect(Collectors.toMap(ProductDto::getProductId, ProductDto::getPrice));
 
         return productQuantities.entrySet().stream()
-                .map(entry -> entry.getValue() * productPrices.get(entry.getKey()))
-                .mapToDouble(Double::doubleValue)
-                .sum();
+                .map(entry -> {
+                    BigDecimal quantity = BigDecimal.valueOf(entry.getValue());
+                    BigDecimal price = productPrices.get(entry.getKey());
+                    return price.multiply(quantity);
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
@@ -94,9 +104,9 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new NotFoundException("Payment `%s` not found".formatted(paymentId)));
     }
 
-    private void checkPayments(Double... prices) {
-        for (Double price : prices) {
-            if (price == null || price == 0) {
+    private void checkPayments(BigDecimal... prices) {
+        for (BigDecimal price : prices) {
+            if (price == null || price.doubleValue() <= 0) {
                 throw new BadRequestException("Not enough payment info in order");
             }
         }

@@ -4,15 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.math.BigDecimal;
+
 @Getter
 @AllArgsConstructor
 @ConfigurationProperties(prefix = "app.delivery.rates")
 public class DeliveryCostRates {
-    private final double base;
-    private final int address1;
-    private final int address2;
-    private final double fragile;
-    private final double weight;
-    private final double volume;
-    private final double street;
+    private final BigDecimal base;
+    private final BigDecimal address1;
+    private final BigDecimal address2;
+    private final BigDecimal fragile;
+    private final BigDecimal weight;
+    private final BigDecimal volume;
+    private final BigDecimal street;
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.payment.PaymentStatus;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -21,13 +22,13 @@ public class Payment {
     private UUID orderId;
 
     @Column(name = "total_payment")
-    private Double totalPayment;
+    private BigDecimal totalPayment;
 
     @Column(name = "delivery_total")
-    private Double deliveryTotal;
+    private BigDecimal deliveryTotal;
 
     @Column(name = "vat_total")
-    private Double vatTotal;
+    private BigDecimal vatTotal;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")

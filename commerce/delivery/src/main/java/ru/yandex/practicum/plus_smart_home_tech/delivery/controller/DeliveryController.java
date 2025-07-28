@@ -13,6 +13,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.Del
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.DeliveryFeign;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -47,7 +48,7 @@ public class DeliveryController implements DeliveryFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public Double deliveryCost(OrderDto orderDto) throws FeignException {
+    public BigDecimal deliveryCost(OrderDto orderDto) throws FeignException {
         return deliveryService.calculateDeliveryCost(orderDto);
     }
 }

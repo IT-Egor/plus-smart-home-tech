@@ -11,6 +11,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.Prod
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductState;
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.QuantityState;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -38,5 +39,5 @@ public class ProductDto {
 
     @NotNull(message = "Price is required")
     @Min(value = 1, message = "Price must be greater than 0")
-    private Double price;
+    private BigDecimal price;
 }

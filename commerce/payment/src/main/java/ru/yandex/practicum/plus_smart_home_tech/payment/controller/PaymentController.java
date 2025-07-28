@@ -12,6 +12,7 @@ import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.Paym
 import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.PaymentFeign;
 import ru.yandex.practicum.plus_smart_home_tech.payment.service.PaymentService;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -28,7 +29,7 @@ public class PaymentController implements PaymentFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public Double getTotalCost(@Valid @RequestBody OrderDto orderDto) {
+    public BigDecimal getTotalCost(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.getTotalCost(orderDto);
     }
 
@@ -40,7 +41,7 @@ public class PaymentController implements PaymentFeign {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    public Double productCost(@Valid @RequestBody OrderDto orderDto) {
+    public BigDecimal productCost(@Valid @RequestBody OrderDto orderDto) {
         return paymentService.calculateProductsCost(orderDto);
     }
 
