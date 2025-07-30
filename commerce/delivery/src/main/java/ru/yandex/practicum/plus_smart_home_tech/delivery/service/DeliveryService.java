@@ -1,0 +1,20 @@
+package ru.yandex.practicum.plus_smart_home_tech.delivery.service;
+
+import jakarta.validation.Valid;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.delivery.DeliveryDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public interface DeliveryService {
+    DeliveryDto planDelivery(@Valid DeliveryDto deliveryDto);
+
+    void setSuccessful(UUID orderId);
+
+    void setPicked(UUID orderId);
+
+    void setFailed(UUID orderId);
+
+    BigDecimal calculateDeliveryCost(OrderDto orderDto);
+}

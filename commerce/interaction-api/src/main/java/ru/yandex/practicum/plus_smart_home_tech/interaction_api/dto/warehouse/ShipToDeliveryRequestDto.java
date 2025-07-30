@@ -6,17 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto {
-    @NotNull(message = "Delivery weight is required")
-    private Double deliveryWeight;
+public class ShipToDeliveryRequestDto {
+    @NotNull(message = "Order id is required")
+    private UUID orderId;
 
-    @NotNull(message = "Delivery volume is required")
-    private Double deliveryVolume;
-
-    @NotNull(message = "Fragile is required")
-    private Boolean fragile;
+    @NotNull(message = "Delivery id is required")
+    private UUID deliveryId;
 }

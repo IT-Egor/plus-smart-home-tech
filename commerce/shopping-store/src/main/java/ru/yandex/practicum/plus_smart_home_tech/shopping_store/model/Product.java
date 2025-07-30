@@ -2,10 +2,11 @@ package ru.yandex.practicum.plus_smart_home_tech.shopping_store.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductCategory;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.ProductState;
-import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.store.enums.QuantityState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductCategory;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.ProductState;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.enums.store.QuantityState;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -40,5 +41,5 @@ public class Product {
     private ProductCategory productCategory;
 
     @Column(name = "price")
-    private Double price;
+    private BigDecimal price;
 }

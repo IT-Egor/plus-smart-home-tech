@@ -78,6 +78,18 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(BadRequestException e) {
+        String reasonMessage = "Bad request";
+        log.error("BAD_REQUEST: {}", reasonMessage, e);
+        return ErrorResponse.builder()
+                .message(e.getMessage())
+                .reason(reasonMessage)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
         String reasonMessage = "Entity not found";

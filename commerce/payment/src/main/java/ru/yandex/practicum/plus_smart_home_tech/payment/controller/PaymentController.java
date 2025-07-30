@@ -1,0 +1,53 @@
+package ru.yandex.practicum.plus_smart_home_tech.payment.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.order.OrderDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.dto.payment.PaymentResponseDto;
+import ru.yandex.practicum.plus_smart_home_tech.interaction_api.feign.PaymentFeign;
+import ru.yandex.practicum.plus_smart_home_tech.payment.service.PaymentService;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/payment")
+public class PaymentController implements PaymentFeign {
+    private final PaymentService paymentService;
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public PaymentResponseDto addPayment(@Valid @RequestBody OrderDto orderDto) {
+        return paymentService.addPayment(orderDto);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public BigDecimal getTotalCost(@Valid @RequestBody OrderDto orderDto) {
+        return paymentService.getTotalCost(orderDto);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public void paymentSuccess(@RequestBody UUID paymentId) {
+        paymentService.processSuccessPayment(paymentId);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public BigDecimal productCost(@Valid @RequestBody OrderDto orderDto) {
+        return paymentService.calculateProductsCost(orderDto);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public void paymentFailed(@RequestBody UUID paymentId) {
+        paymentService.processFailedPayment(paymentId);
+    }
+}
